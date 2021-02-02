@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  REL_ROLE_AUTH
+ remarks     
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.RelRoleAuthDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="roleId !=null and roleId !=''">
+        and "ROLE_ID" = #{roleId,jdbcType=INTEGER}
+      </if>
+      <if test="authId !=null and authId !=''">
+        and "AUTH_ID" = #{authId,jdbcType=CHAR}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.RelRoleAuthEntity">
+    <id column="ROLE_ID" property="roleId" jdbcType="INTEGER"/>
+    <id column="AUTH_ID" property="authId" jdbcType="CHAR"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ROLE_ID" , "AUTH_ID"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select
+    <include refid="Base_Column_List"/>
+    from "REL_ROLE_AUTH" where "ROLE_ID" = #{id,jdbcType=INTEGER} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.RelRoleAuthEntity">
+    select count(1) from "REL_ROLE_AUTH"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.RelRoleAuthEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "REL_ROLE_AUTH"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "REL_ROLE_AUTH"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.RelRoleAuthEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "REL_ROLE_AUTH"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from "REL_ROLE_AUTH" where "ROLE_ID" = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "REL_ROLE_AUTH" where "ROLE_ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective" parameterType="com.hengtianyi.dims.service.entity.RelRoleAuthEntity">
+    delete from "REL_ROLE_AUTH"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.RelRoleAuthEntity">
+    insert into "REL_ROLE_AUTH" ("ROLE_ID" , "AUTH_ID") values (#{roleId,jdbcType=INTEGER} , #{authId,jdbcType=CHAR})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.RelRoleAuthEntity">
+    insert into "REL_ROLE_AUTH"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="roleId != null or roleId == 0">
+        "ROLE_ID",
+      </if>
+      <if test="authId != null and authId !=''">
+        "AUTH_ID",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="roleId != null or roleId == 0">
+        #{roleId,jdbcType=INTEGER},
+      </if>
+      <if test="authId != null and authId !=''">
+        #{authId,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 根据角色ID查询对应的权限ID集合 -->
+  <select id="getRoleAuthByRoleId" resultType="java.lang.String"
+    parameterType="java.lang.Integer">
+    select "AUTH_ID"
+    from "REL_ROLE_AUTH"
+    where "ROLE_ID" =  #{roleId,jdbcType=INTEGER}
+  </select>
+
+  <!-- 根据角色ID删除对应的权限角色关系 -->
+  <delete id="deleteRoleAuthByRoleId" parameterType="java.lang.Integer">
+    delete from "REL_ROLE_AUTH" where "ROLE_ID" =  #{roleId,jdbcType=INTEGER}
+  </delete>
+
+  <!-- 给指定角色ID绑定权限集合 -->
+  <insert id="addRoleAuthByRoleId">
+    insert all
+    <foreach collection="list" item="item" index="index">
+      into "REL_ROLE_AUTH" ("ROLE_ID", "AUTH_ID") values (#{roleId,jdbcType=INTEGER} , #{item,jdbcType=VARCHAR})
+    </foreach>
+    select 1 from dual
+  </insert>
+
+</mapper>

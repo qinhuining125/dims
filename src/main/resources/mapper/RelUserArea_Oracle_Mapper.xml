@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  REL_USER_AREA
+ remarks     
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.RelUserAreaDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="userId !=null and userId !=''">
+        and "USER_ID" = #{userId,jdbcType=CHAR}
+      </if>
+      <if test="areaCode !=null and areaCode !=''">
+        and "AREA_CODE" = #{areaCode,jdbcType=VARCHAR}
+      </if>
+      <if test="areaName !=null and areaName !=''">
+        and "AREA_NAME" = #{areaName,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.RelUserAreaEntity">
+    <id column="USER_ID" property="userId" jdbcType="CHAR"/>
+    <id column="AREA_CODE" property="areaCode" jdbcType="VARCHAR"/>
+    <result column="AREA_NAME" property="areaName" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "USER_ID" , "AREA_CODE" , "AREA_NAME"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "REL_USER_AREA" where "USER_ID" = #{id,jdbcType=CHAR} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.RelUserAreaEntity">
+    select count(1) from "REL_USER_AREA"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.RelUserAreaEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "REL_USER_AREA"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "REL_USER_AREA"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.RelUserAreaEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "REL_USER_AREA"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from "REL_USER_AREA" where "USER_ID" = #{id,jdbcType=CHAR}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "REL_USER_AREA" where "USER_ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective" parameterType="com.hengtianyi.dims.service.entity.RelUserAreaEntity">
+    delete from "REL_USER_AREA"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.RelUserAreaEntity">
+    insert into "REL_USER_AREA" ("USER_ID" , "AREA_CODE" , "AREA_NAME") values (#{userId,jdbcType=CHAR} , #{areaCode,jdbcType=VARCHAR}, #{areaName,jdbcType=VARCHAR})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.RelUserAreaEntity">
+    insert into "REL_USER_AREA"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null and userId !=''">
+        "USER_ID",
+      </if>
+      <if test="areaCode != null and areaCode !=''">
+        "AREA_CODE",
+      </if>
+      <if test="areaName != null and areaName !=''">
+        "AREA_NAME",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null and userId !=''">
+        #{userId,jdbcType=CHAR},
+      </if>
+      <if test="areaCode != null and areaCode !=''">
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="areaName != null and areaName !=''">
+        #{areaName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="getUserArealist" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    b."ID" as "USER_ID" , a."AREA_CODE" , a."AREA_NAME"
+    from "REL_USER_AREA" a
+    left join "SYS_USER" b on a."AREA_CODE"=b."AREA_CODE"
+    where a."USER_ID" = #{userId,jdbcType=CHAR}
+  </select>
+
+  <delete id="deleteUserArea" parameterType="java.lang.String">
+    delete from "REL_USER_AREA"
+    where "USER_ID" = #{userId,jdbcType=CHAR}
+  </delete>
+
+  <select id="contactAdmin" resultType="java.lang.String">
+    select
+    c.area_code
+    from (select b.area_code from sys_user b where b.id = #{reportUserId,jdbcType=CHAR}) c
+    left join (select a.area_code from rel_user_area a where a.user_id = #{userId,jdbcType=CHAR}) d
+    on c.area_code like (d.area_code || '%')
+  </select>
+</mapper>

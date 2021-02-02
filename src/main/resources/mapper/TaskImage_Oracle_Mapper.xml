@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  TASK_INFO
+ remarks     
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.TaskImageDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="id !=null and id !=''">
+        and "ID" = #{id,jdbcType=CHAR}
+      </if>
+      <if test="imageURL !=null and imageURL !=''">
+        and "IMAGE_URL" = #{imageURL,jdbcType=CHAR}
+      </if>
+      <if test="taskId !=null and taskId !=''">
+        and "TASK_ID" = #{taskId,jdbcType=DECIMAL}
+      </if>
+      <if test="createTime !=null and createTime !=''">
+        and "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.TaskImageEntity">
+    <id column="ID" property="id" jdbcType="CHAR"/>
+    <result column="IMAGE_URL" property="imageURL" jdbcType="VARCHAR"/>
+    <result column="TASK_ID" property="taskId" jdbcType="CHAR"/>
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "IMAGE_URL" , "TASK_ID" , "CREATE_TIME"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "IMAGE_TASK" where "ID" = #{Id,jdbcType=CHAR}
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.TaskImageEntity">
+    select count(1) from "IMAGE_TASK"
+    <include refid="sql_where"/>
+  </select>
+
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.TaskImageEntity">
+    select
+    IMAGE_URL
+    from "IMAGE_TASK"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+<!--  &lt;!&ndash; 单条删除 &ndash;&gt;-->
+<!--  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">-->
+<!--    delete from "IMAGE_TASK" where "TASK_ID" = #{taskId,jdbcType=CHAR}-->
+<!--  </delete>-->
+
+  <!-- 通过任务id删除 -->
+  <delete id="deleteByTaskIds" parameterType="java.util.List">
+    delete from "IMAGE_TASK" where "TASK_ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "IMAGE_TASK" where "TASK_ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.TaskImageEntity">
+    insert into "IMAGE_TASK" ("ID" , "IMAGE_URL" , "TASK_ID"  , "CREATE_TIME" ) values (#{id,jdbcType=CHAR} , #{imageURL,jdbcType=VARCHAR} , #{taskId,jdbcType=CHAR} ,  #{createTime,jdbcType=TIMESTAMP} )
+  </insert>
+
+
+</mapper>

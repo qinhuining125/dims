@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  INCORRUPT_ADVICE
+ remarks     廉政建议
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.IncorruptAdviceDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="id !=null and id !=''">
+        and "ID" = #{id,jdbcType=CHAR}
+      </if>
+      <if test="userId !=null and userId !=''">
+        and "USER_ID" = #{userId,jdbcType=CHAR}
+      </if>
+      <if test="createTime !=null and createTime !=''">
+        and "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.IncorruptAdviceEntity">
+    <id column="ID" property="id" jdbcType="CHAR"/>
+    <result column="USER_ID" property="userId" jdbcType="CHAR"/>
+    <result column="CONTENT" property="content" jdbcType="VARCHAR"/>
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR"/>
+    <result column="ROLE_ID" property="roleId" jdbcType="DECIMAL"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "USER_ID" , "CONTENT" , "CREATE_TIME"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "INCORRUPT_ADVICE" where "ID" = #{id,jdbcType=CHAR} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.IncorruptAdviceEntity">
+    select count(1) from "INCORRUPT_ADVICE"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.IncorruptAdviceEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "INCORRUPT_ADVICE"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "INCORRUPT_ADVICE"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.IncorruptAdviceEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "INCORRUPT_ADVICE"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from "INCORRUPT_ADVICE" where "ID" = #{id,jdbcType=CHAR}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "INCORRUPT_ADVICE" where "ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective"
+    parameterType="com.hengtianyi.dims.service.entity.IncorruptAdviceEntity">
+    delete from "INCORRUPT_ADVICE"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.IncorruptAdviceEntity">
+    insert into "INCORRUPT_ADVICE" ("ID" , "USER_ID" , "CONTENT" , "CREATE_TIME") values (#{id,jdbcType=CHAR} , #{userId,jdbcType=CHAR} , #{content,jdbcType=VARCHAR} , #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective"
+    parameterType="com.hengtianyi.dims.service.entity.IncorruptAdviceEntity">
+    insert into "INCORRUPT_ADVICE"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        "ID",
+      </if>
+      <if test="userId != null and userId !=''">
+        "USER_ID",
+      </if>
+      <if test="content != null and content !=''">
+        "CONTENT",
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        #{id,jdbcType=CHAR},
+      </if>
+      <if test="userId != null and userId !=''">
+        #{userId,jdbcType=CHAR},
+      </if>
+      <if test="content != null and content !=''">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+  <!-- 全部更新 -->
+  <update id="updateByPrimaryKey"
+    parameterType="com.hengtianyi.dims.service.entity.IncorruptAdviceEntity">
+    update "INCORRUPT_ADVICE" set
+      "USER_ID" = #{userId,jdbcType=CHAR} , "CONTENT" = #{content,jdbcType=VARCHAR} , "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <!-- 选择性更新 -->
+  <update id="updateByPrimaryKeySelective"
+    parameterType="com.hengtianyi.dims.service.entity.IncorruptAdviceEntity">
+    update "INCORRUPT_ADVICE"
+    <set>
+      <if test="userId != null">
+        "USER_ID" = #{userId,jdbcType=CHAR},
+      </if>
+      <if test="content != null">
+        "CONTENT" = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <!--分页-->
+  <select id="pagelist" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.dto.QueryDto">
+    select
+    p."ID" , p."USER_ID" , p."CONTENT" , p."CREATE_TIME",
+    s."USER_NAME",s."ROLE_ID"
+    from (select ROWNUM as "ROW_ID",
+    <include refid="Base_Column_List"/>
+    from (select t.* from "INCORRUPT_ADVICE" t
+    order by t.create_time desc)
+    where ROWNUM &lt;= #{dto.end}) p
+    left join "SYS_USER" s on p."USER_ID"=s."ID"
+    where p."ROW_ID" &gt;= #{dto.first}
+  </select>
+
+  <select id="pagecount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.dto.QueryDto">
+    select count(1) from "INCORRUPT_ADVICE" t where 1=1
+    <if test="dto.areaCode!=null and dto.areaCode !=''">
+      and t."USER_ID" in (select a.id from sys_user a
+      where a.area_code like (#{dto.areaCode,jdbcType=VARCHAR} ||'%'))
+    </if>
+  </select>
+
+
+  <select id="getEchartsData" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    p."ID" , p."USER_ID" , p."CONTENT" , p."CREATE_TIME",
+    s."USER_NAME",s."ROLE_ID"
+    from "INCORRUPT_ADVICE" p
+    inner join "SYS_USER" s on p."USER_ID"=s."ID"
+    where 1=1
+    <choose>
+      <when test="endTime!=null and endTime!=''">
+        and p."CREATE_TIME" >= to_date(#{startTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+        and p."CREATE_TIME" &lt; to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+      </when>
+      <otherwise>
+        and p."CREATE_TIME" &lt; sysdate
+      </otherwise>
+    </choose>
+    <if test="areaCode!=null and areaCode!=''">
+      and s."AREA_CODE" like (#{areaCode,jdbcType=VARCHAR} ||'%')
+    </if>
+  </select>
+</mapper>

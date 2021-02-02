@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  SYS_LOG
+ remarks     
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.SysLogDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="id !=null and id !=''">
+        and "ID" = #{id,jdbcType=DECIMAL}
+      </if>
+      <if test="status !=null and status !=''">
+        and "STATUS" = #{status,jdbcType=DECIMAL}
+      </if>
+      <if test="startTime !=null and startTime !=''">
+        and "START_TIME" &gt;= #{startTime,jdbcType=DECIMAL}
+      </if>
+      <if test="endTime !=null and endTime !=''">
+        and "START_TIME" &lt; #{endTime,jdbcType=DECIMAL}
+      </if>
+      <if test="runTime !=null and runTime !=''">
+        and "RUN_TIME" = #{runTime,jdbcType=DECIMAL}
+      </if>
+      <if test="userId !=null and userId !=''">
+        and "USER_ID" = #{userId,jdbcType=CHAR}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.SysLogEntity">
+    <id column="ID" property="id" jdbcType="DECIMAL"/>
+    <result column="STATUS" property="status" jdbcType="DECIMAL"/>
+    <result column="START_TIME" property="startTime" jdbcType="DECIMAL"/>
+    <result column="RUN_TIME" property="runTime" jdbcType="DECIMAL"/>
+    <result column="TYPE" property="type" jdbcType="VARCHAR"/>
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR"/>
+    <result column="URI" property="uri" jdbcType="VARCHAR"/>
+    <result column="METHOD" property="method" jdbcType="VARCHAR"/>
+    <result column="USER_AGENT" property="userAgent" jdbcType="VARCHAR"/>
+    <result column="IP" property="ip" jdbcType="VARCHAR"/>
+    <result column="USER_ID" property="userId" jdbcType="CHAR"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "STATUS" , "START_TIME" , "RUN_TIME" , "TYPE" , "DESCRIPTION" , "URI" , "METHOD" , "USER_AGENT" , "IP" , "USER_ID"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select
+    <include refid="Base_Column_List"/>
+    from "SYS_LOG" where "ID" = #{id,jdbcType=DECIMAL} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.SysLogEntity">
+    select count(1) from "SYS_LOG"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.SysLogEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "SYS_LOG"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "SYS_LOG"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.SysLogEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "SYS_LOG"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from "SYS_LOG" where "ID" = #{id,jdbcType=DECIMAL}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "SYS_LOG" where "ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective" parameterType="com.hengtianyi.dims.service.entity.SysLogEntity">
+    delete from "SYS_LOG"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.SysLogEntity">
+    insert into "SYS_LOG" ("ID" , "STATUS" , "START_TIME" , "RUN_TIME" , "TYPE" , "DESCRIPTION" , "URI" , "METHOD" , "USER_AGENT" , "IP" , "USER_ID") values (#{id,jdbcType=DECIMAL} , #{status,jdbcType=DECIMAL} , #{startTime,jdbcType=DECIMAL} , #{runTime,jdbcType=DECIMAL} , #{type,jdbcType=VARCHAR} , #{description,jdbcType=VARCHAR} , #{uri,jdbcType=VARCHAR} , #{method,jdbcType=VARCHAR} , #{userAgent,jdbcType=VARCHAR} , #{ip,jdbcType=VARCHAR} , #{userId,jdbcType=CHAR})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.SysLogEntity">
+    insert into "SYS_LOG"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null or id == 0">
+        "ID",
+      </if>
+      <if test="status != null or status == 0">
+        "STATUS",
+      </if>
+      <if test="startTime != null or startTime == 0">
+        "START_TIME",
+      </if>
+      <if test="runTime != null or runTime == 0">
+        "RUN_TIME",
+      </if>
+      <if test="type != null and type !=''">
+        "TYPE",
+      </if>
+      <if test="description != null and description !=''">
+        "DESCRIPTION",
+      </if>
+      <if test="uri != null and uri !=''">
+        "URI",
+      </if>
+      <if test="method != null and method !=''">
+        "METHOD",
+      </if>
+      <if test="userAgent != null and userAgent !=''">
+        "USER_AGENT",
+      </if>
+      <if test="ip != null and ip !=''">
+        "IP",
+      </if>
+      <if test="userId != null and userId !=''">
+        "USER_ID",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null or id == 0">
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null or status == 0">
+        #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="startTime != null or startTime == 0">
+        #{startTime,jdbcType=DECIMAL},
+      </if>
+      <if test="runTime != null or runTime == 0">
+        #{runTime,jdbcType=DECIMAL},
+      </if>
+      <if test="type != null and type !=''">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null and description !=''">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="uri != null and uri !=''">
+        #{uri,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null and method !=''">
+        #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="userAgent != null and userAgent !=''">
+        #{userAgent,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null and ip !=''">
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null and userId !=''">
+        #{userId,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+  <!-- 全部更新 -->
+  <update id="updateByPrimaryKey" parameterType="com.hengtianyi.dims.service.entity.SysLogEntity">
+    update "SYS_LOG" set
+      "STATUS" = #{status,jdbcType=DECIMAL} , "START_TIME" = #{startTime,jdbcType=DECIMAL} , "RUN_TIME" = #{runTime,jdbcType=DECIMAL} , "TYPE" = #{type,jdbcType=VARCHAR} , "DESCRIPTION" = #{description,jdbcType=VARCHAR} , "URI" = #{uri,jdbcType=VARCHAR} , "METHOD" = #{method,jdbcType=VARCHAR} , "USER_AGENT" = #{userAgent,jdbcType=VARCHAR} , "IP" = #{ip,jdbcType=VARCHAR} , "USER_ID" = #{userId,jdbcType=CHAR}
+    where "ID" = #{id,jdbcType=DECIMAL}
+  </update>
+
+  <!-- 选择性更新 -->
+  <update id="updateByPrimaryKeySelective"
+    parameterType="com.hengtianyi.dims.service.entity.SysLogEntity">
+    update "SYS_LOG"
+    <set>
+      <if test="status != null or status == 0">
+        "STATUS" = #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="startTime != null or startTime == 0">
+        "START_TIME" = #{startTime,jdbcType=DECIMAL},
+      </if>
+      <if test="runTime != null or runTime == 0">
+        "RUN_TIME" = #{runTime,jdbcType=DECIMAL},
+      </if>
+      <if test="type != null">
+        "TYPE" = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        "DESCRIPTION" = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="uri != null">
+        "URI" = #{uri,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        "METHOD" = #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="userAgent != null">
+        "USER_AGENT" = #{userAgent,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null">
+        "IP" = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        "USER_ID" = #{userId,jdbcType=CHAR},
+      </if>
+    </set>
+    where "ID" = #{id,jdbcType=DECIMAL}
+  </update>
+  <!-- 获取日志记录的参数 -->
+  <select id="getParameter" resultType="java.lang.String" parameterType="java.lang.Long">
+    select "BIG_DATA" from "SYS_LOG_TEXT"
+    where "ID" = #{logId,jdbcType=NUMERIC} and "TYPE" = 0
+    and rownum &lt;= 1
+  </select>
+
+  <!-- 获取日志记录的返回 -->
+  <select id="getResult" resultType="java.lang.String" parameterType="java.lang.Long">
+    select "BIG_DATA" from "SYS_LOG_TEXT"
+    where "ID" = #{logId,jdbcType=NUMERIC} and "TYPE" = 1
+    and rownum &lt;= 1
+  </select>
+
+  <!-- 添加日志参数和结果 -->
+  <insert id="insertParameterAndResult">
+    insert all into "SYS_LOG_TEXT" ("ID", "TYPE", "BIG_DATA") values (#{logId,jdbcType=NUMERIC}, 0, #{parameter,jdbcType=VARCHAR})
+    into "SYS_LOG_TEXT" ("ID", "TYPE", "BIG_DATA") values (#{logId,jdbcType=NUMERIC}, 1, #{result,jdbcType=VARCHAR})
+    select 1 from dual
+  </insert>
+
+  <!-- 清空日志表，为了保证安全，屏蔽了truncate table -->
+  <delete id="truncateLog">
+    delete from "SYS_LOG"
+  </delete>
+
+  <delete id="truncateLogText">
+    delete from "SYS_LOG_TEXT"
+  </delete>
+
+  <!-- 获取最早的日志时间戳 -->
+  <select id="getFirstTime" resultType="java.lang.Long">
+    select "START_TIME" from (select "START_TIME",rownum as "ROW_ID" from "SYS_LOG" order by "ID" asc)a where "ROW_ID" &lt;= 1
+  </select>
+
+</mapper>

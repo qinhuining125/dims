@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  IMAGE_REVEAL
+ remarks     
+ author
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.ImageRevealDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="id !=null and id !=''">
+        and "ID" = #{id,jdbcType=CHAR}
+      </if>
+      <if test="imageUrl !=null and imageUrl !=''">
+        and "IMAGE_URL" = #{imageUrl,jdbcType=VARCHAR}
+      </if>
+      <if test="revealId !=null and revealId !=''">
+        and "REVEAL_ID" = #{revealId,jdbcType=CHAR}
+      </if>
+      <if test="createTime !=null and createTime !=''">
+        and "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.ImageRevealEntity">
+    <id column="ID" property="id" jdbcType="CHAR"/>
+    <result column="IMAGE_URL" property="imageUrl" jdbcType="VARCHAR"/>
+    <result column="REVEAL_ID" property="revealId" jdbcType="CHAR"/>
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "IMAGE_URL" , "REVEAL_ID" , "CREATE_TIME"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "IMAGE_REVEAL" where "ID" = #{id,jdbcType=CHAR} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.ImageRevealEntity">
+    select count(1) from "IMAGE_REVEAL"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.ImageRevealEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "IMAGE_REVEAL"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "IMAGE_REVEAL"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.ImageRevealEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "IMAGE_REVEAL"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from "IMAGE_REVEAL" where "ID" = #{id,jdbcType=CHAR}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "IMAGE_REVEAL" where "ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective" parameterType="com.hengtianyi.dims.service.entity.ImageRevealEntity">
+    delete from "IMAGE_REVEAL"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.ImageRevealEntity">
+    insert into "IMAGE_REVEAL" ("ID" , "IMAGE_URL" , "REVEAL_ID" , "CREATE_TIME")
+    values (#{id,jdbcType=CHAR} ,  #{imageUrl,jdbcType=VARCHAR}, #{revealId,jdbcType=CHAR} , #{createTime,jdbcType=TIMESTAMP} )
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.ImageRevealEntity">
+    insert into "IMAGE_REVEAL"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        "ID",
+      </if>
+      <if test="imageUrl != null and imageUrl !=''">
+        "IMAGE_URL",
+      </if>
+      <if test="revealId != null">
+        "REVEAL_ID",
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        #{id,jdbcType=CHAR},
+      </if>
+      <if test="imageUrl != null and imageUrl !=''">
+        #{imageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="revealId != null">
+        #{revealId,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+  <!-- 全部更新 -->
+  <update id="updateByPrimaryKey" parameterType="com.hengtianyi.dims.service.entity.ImageRevealEntity">
+    update "IMAGE_REVEAL" set
+      "IMAGE_URL" = #{imageUrl,jdbcType=VARCHAR}, "REVEAL_ID" = #{revealId,jdbcType=CHAR} , "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <select id="getAllImages" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select t."IMAGE_URL", t."REVEAL_ID", t."CREATE_TIME"
+    from "IMAGE_REVEAL" t
+    where t."REVEAL_ID"=#{revealId,jdbcType=CHAR}
+    order by t."CREATE_TIME" asc
+  </select>
+
+</mapper>

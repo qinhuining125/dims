@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="off">
+  <!-- 为保证单元测试，可以输出日志而使用，正式环境下不需要 -->
+  <Appenders>
+    <!--输出控制台的配置 -->
+    <Console name = "Console" target = "SYSTEM_OUT">
+      <!--控制台只输出level及以上级别的信息（onMatch） -->
+      <!-- onMismatch="NEUTRAL" 表示不匹配比此日志级别低的 -->
+      <ThresholdFilter level = "info" onMatch = "ACCEPT" onMismatch = "NEUTRAL"/>
+      <PatternLayout
+          pattern = "%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} %L %M - %msg%xEx%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="org.springframework" level="INFO" />
+    <Logger name="org.springframework.web" level="INFO" />
+    <Logger name="com.hengtianyi.dims.service.dao.SysDictDao" level="DEBUG" />
+    <Root level="INFO">
+      <AppenderRef ref="Console" />
+    </Root>
+  </Loggers>
+</Configuration>

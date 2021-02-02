@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  REVEAL_INFO
+ remarks     
+ author
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.RevealInfoDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="id !=null and id !=''">
+        and "ID" = #{id,jdbcType=CHAR}
+      </if>
+      <if test="userId !=null and userId !=''">
+        and "USER_ID" = #{userId,jdbcType=CHAR}
+      </if>
+      <if test="createTime !=null and createTime !=''">
+        and "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="state !=null or state == 0">
+        <choose>
+          <when test="state==0">
+            and ("STATE" = 0 or "STATE" = 3)
+          </when>
+          <otherwise>
+            and "STATE" = #{state,jdbcType=DECIMAL}
+          </otherwise>
+        </choose>
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.RevealInfoEntity">
+    <id column="ID" property="id" jdbcType="CHAR"/>
+    <result column="USER_ID" property="userId" jdbcType="CHAR"/>
+    <result column="ROLE_ID" property="roleId" jdbcType="DECIMAL"/>
+    <result column="CONTACT" property="contact" jdbcType="VARCHAR"/>
+    <result column="REVEAL_TARGET" property="revealTarget" jdbcType="VARCHAR"/>
+    <result column="CONTENT" property="content" jdbcType="VARCHAR"/>
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR"/>
+    <result column="TYPE" property="type" jdbcType="DECIMAL"/>
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="STATE" property="state" jdbcType="DECIMAL"/>
+    <result column="TOWN_CODE" property="townCode" jdbcType="VARCHAR"/>
+    <result column="VILLAGE_CODE" property="villageCode" jdbcType="VARCHAR"/>
+    <result column="INSPECTION_ID" property="inspectionId" jdbcType="CHAR"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "USER_ID" ,"CONTACT", "REVEAL_TARGET", "CONTENT" , "USER_NAME", "TYPE", "CREATE_TIME" , "STATE", "ROLE_ID", "TOWN_CODE","VILLAGE_CODE","INSPECTION_ID"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+     t."ID" , t."USER_ID" ,t."CONTACT", t."REVEAL_TARGET", t."CONTENT" , t."USER_NAME", t."TYPE", t."CREATE_TIME" , t."STATE", t."ROLE_ID", t."TOWN_CODE",t."VILLAGE_CODE",t."INSPECTION_ID",s."AREA_NAME" as townName,m."AREA_NAME" as villageName
+    from "REVEAL_INFO" t left join TOWNSHIP s on t."TOWN_CODE"=s."AREA_CODE" left join VILLAGE m on t."VILLAGE_CODE"=m."AREA_CODE"  where "ID" = #{id,jdbcType=CHAR} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.RevealInfoEntity">
+    select count(1) from "REVEAL_INFO"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.RevealInfoEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "REVEAL_INFO"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "REVEAL_INFO"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.RevealInfoEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "REVEAL_INFO"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from "REVEAL_INFO" where "ID" = #{id,jdbcType=CHAR}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "REVEAL_INFO" where "ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective" parameterType="com.hengtianyi.dims.service.entity.RevealInfoEntity">
+    delete from "REVEAL_INFO"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.RevealInfoEntity">
+    insert into "REVEAL_INFO" ("ID" , "USER_ID", "ROLE_ID" ,"CONTACT", "REVEAL_TARGET",  "CONTENT" ,"USER_NAME",  "TYPE" , "CREATE_TIME" , "STATE", "TOWN_CODE", "VILLAGE_CODE","INSPECTION_ID")
+    values (#{id,jdbcType=CHAR} , #{userId,jdbcType=CHAR} , #{roleId,jdbcType=DECIMAL} , #{contact,jdbcType=VARCHAR},
+    #{revealTarget,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{userName, jdbcType=VARCHAR}, #{type,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP} , #{state,jdbcType=DECIMAL},
+    #{townCode,jdbcType=VARCHAR}, #{villageCode,jdbcType=VARCHAR}, #{inspectionId,jdbcType=CHAR} )
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.RevealInfoEntity">
+    insert into "REVEAL_INFO"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        "ID",
+      </if>
+      <if test="userId != null and userId !=''">
+        "USER_ID",
+      </if>
+      <if test="roleId != null or roleId == 0">
+        "ROLE_ID",
+      </if>
+      <if test="userName != null and userName !=''">
+        "USER_NAME",
+      </if>
+      <if test="townCode != null and townCode !=''">
+        "TOWN_CODE",
+      </if>
+      <if test="villageCode != null and villageCode !=''">
+        "VILLAGE_CODE",
+      </if>
+      <if test="content != null and content !=''">
+        "CONTENT",
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME",
+      </if>
+      <if test="state != null or state == 0">
+        "STATE",
+      </if>
+      <if test="contact != null and contact !=''">
+        "CONTACT",
+      </if>
+      <if test="type != null or type == 0">
+        "TYPE",
+      </if>
+      <if test="revealTarget != null and revealTarget !=''">
+        "REVEAL_TARGET",
+      </if>
+      <if test="inspectionId != null and inspectionId !=''">
+        "INSPECTION_ID",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        #{id,jdbcType=CHAR},
+      </if>
+      <if test="userId != null and userId !=''">
+        #{userId,jdbcType=CHAR},
+      </if>
+      <if test="roleId != null or roleId == 0">
+        #{roleId,jdbcType=DECIMAL},
+      </if>
+      <if test="userName != null and userName !=''">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="townCode != null and townCode !=''">
+        #{townCode,jdbcType=VARCHAR},
+      </if>
+      <if test="villageCode != null and villageCode !=''">
+        #{villageCode,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null and content !=''">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null or state == 0">
+        #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="contact != null and contact !=''">
+        #{contact,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null or type == 0">
+        #{type,jdbcType=DECIMAL},
+      </if>
+      <if test="revealTarget != null and revealTarget !=''">
+        #{revealTarget,jdbcType=VARCHAR},
+      </if>
+      <if test="inspectionId != null and inspectionId !=''">
+        #{inspectionId,jdbcType=CHAR},
+      </if>
+
+    </trim>
+  </insert>
+
+
+  <!-- 全部更新 -->
+  <update id="updateByPrimaryKey" parameterType="com.hengtianyi.dims.service.entity.RevealInfoEntity">
+    update "REVEAL_INFO" set
+      "USER_ID" = #{userId,jdbcType=CHAR} , "USER_NAME" = #{userName,jdbcType=VARCHAR}, "ROLE_ID" = #{roleId,jdbcType=DECIMAL} , "CONTENT" = #{content,jdbcType=VARCHAR} , "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP} , "STATE" = #{state,jdbcType=DECIMAL},
+      "CONTACT" = #{contact,jdbcType=VARCHAR},"TYPE"=#{type,jdbcType=DECIMAL}  ,"REVEAL_TARGET" = #{revealTarget,jdbcType=VARCHAR},
+      "TOWN_CODE" = #{townCode,jdbcType=VARCHAR}, "VILLAGE_CODE" = #{villageCode,jdbcType=VARCHAR}
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <!-- 选择性更新 -->
+  <update id="updateByPrimaryKeySelective"
+    parameterType="com.hengtianyi.dims.service.entity.RevealInfoEntity">
+    update "REVEAL_INFO"
+    <set>
+      <if test="userId != null">
+        "USER_ID" = #{userId,jdbcType=CHAR},
+      </if>
+      <if test="roleId != null">
+        "ROLE_ID" = #{roleId,jdbcType=DECIMAL},
+      </if>
+      <if test="userName != null">
+        "USER_NAME" = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="townCode != null and townCode !=''">
+        "TOWN_CODE" = #{townCode,jdbcType=VARCHAR},
+      </if>
+      <if test="villageCode != null and villageCode !=''">
+        "VILLAGE_CODE" = #{villageCode,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        "CONTENT" = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null or state == 0">
+        "STATE" = #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="contact != null and contact !=''">
+        "CONTACT" = #{contact,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null or type == 0">
+        "TYPE"=#{type,jdbcType=DECIMAL}  ,
+      </if>
+      <if test="revealTarget != null and revealTarget !=''">
+        "REVEAL_TARGET" = #{revealTarget,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <!--分页-->
+  <select id="pagelist" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.dto.QueryDto">
+    select p."ID" , p."USER_ID", p."CONTACT", p."REVEAL_TARGET", p."CONTENT", p."USER_NAME", p."TYPE", p."CREATE_TIME" , p."STATE", p."ROLE_ID", p."TOWN_CODE",P."VILLAGE_CODE", p."INSPECTION_ID",s.PATROL_NAME
+    from (select ROWNUM as "ROW_ID",
+    <include refid="Base_Column_List"/>
+    from (select t.* from "REVEAL_INFO" t
+    <include refid="page_where"/>
+    order by t.create_time desc
+    )
+    where ROWNUM &lt;= #{dto.end}) p
+    left join "PATROL_INFO" s on p."INSPECTION_ID"=s."ID"
+    where p."ROW_ID" &gt;= #{dto.first}
+  </select>
+
+  <select id="pagecount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.dto.QueryDto">
+    select count(1) from "REVEAL_INFO" t
+    <include refid="page_where"/>
+  </select>
+
+  <sql id="page_where">
+    <where>
+        <!--举报人角色选择-->
+        <if test="dto.userId != null and dto.userId != ''">
+         <!--网格员和联络员只有上报，没有查看功能吗？-->
+          <if test="dto.roleId ==1001 or dto.roleId ==1002">
+            and t."ROLE_ID" = #{dto.roleId,jdbcType=DECIMAL}
+            and t.user_id= #{dto.userId,jdbcType=CHAR}
+          </if>
+          <if test="dto.roleId==1009 or dto.roleId==1010 or dto.roleId==1011">
+            and t."ID" in ( select info."ID" from "REVEAL_INFO" info left join "REVEAL_FLOW" flow on
+            info."ID"=flow."REVEAL_ID" where flow."RECEIVE_ID" = #{dto.userId,jdbcType=CHAR}
+            <if test="dto.state!=null and dto.state==1">
+               and info."ID" not in (SELECT infos."ID" FROM  "REVEAL_INFO" infos  LEFT JOIN "REVEAL_FLOW" flows ON infos."ID" = flows."REVEAL_ID"
+               WHERE  flows."RECEIVE_ID" = #{dto.userId,jdbcType=CHAR}   AND flows."STATE" =2)
+            </if>
+            <if test="dto.state!=null and dto.state==2">
+              and flow."STATE" = #{dto.state,jdbcType=DECIMAL}
+            </if>
+            <if test="dto.state!=null and dto.state==0">
+              and flow."STATE" = #{dto.state,jdbcType=DECIMAL}
+            </if>
+            )
+          </if>
+        </if>
+      <!--状态check,如果为巡察办主任，默认走原有逻辑-->
+      <if test="dto.roleId==1008 and dto.state!=null">
+        and t."STATE" = #{dto.state,jdbcType=DECIMAL}
+      </if>
+      <!--添加上管理员角色判定-->
+      <if test="dto.roleId==1007 and dto.state!=null">
+        and t."STATE" = #{dto.state,jdbcType=DECIMAL}
+      </if>
+      <!--区域check，区分村和镇-->
+      <if test="dto.areaCode!=null and dto.areaCode !=''">
+        and t."VILLAGE_CODE" like (#{dto.areaCode,jdbcType=VARCHAR} ||'%')
+      </if>
+      <!--时间段check-->
+      <if test="dto.startTime!=null and dto.startTime !=''">
+        and t."CREATE_TIME" >= to_date(#{dto.startTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+      </if>
+      <if test="dto.endTime!=null and dto.endTime !=''">
+        and t."CREATE_TIME" &lt; to_date(#{dto.endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+      </if>
+    </where>
+  </sql>
+
+  <select id="getEchartsData" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    t."ID" , t."ROLE_ID" , t."STATE"
+    from "REVEAL_INFO" t
+    where 1=1
+    <choose>
+      <when test="endTime!=null and endTime!=''">
+        and t."CREATE_TIME" >= to_date(#{startTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+        and t."CREATE_TIME" &lt; to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+      </when>
+      <otherwise>
+        and t."CREATE_TIME" &lt; sysdate
+      </otherwise>
+    </choose>
+    <if test="areaCode!=null and areaCode!=''">
+      and (case
+            when t."ROLE_ID"=2000
+                then  ( select sys.id from sys_user sys where sys.area_code = t.village_code and rownum=1 )
+            else t."USER_ID" 	end  )
+            in (select a.id from sys_user a where a.area_code like  (#{areaCode,jdbcType=VARCHAR} ||'%'))
+
+    </if>
+  </select>
+
+</mapper>

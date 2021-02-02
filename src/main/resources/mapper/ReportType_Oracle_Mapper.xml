@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  REPORT_TYPE
+ remarks     上报类型
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.ReportTypeDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="id !=null and id !=''">
+        and "ID" = #{id,jdbcType=INTEGER}
+      </if>
+      <if test="roleId !=null and roleId !=''">
+        and "ROLE_ID" = #{roleId,jdbcType=INTEGER}
+      </if>
+      <if test="content !=null and content !=''">
+        and "CONTENT" like ('%' || replace(replace(#{content,jdbcType=VARCHAR},'%','\%'),'_','\_')
+        || '%') escape '\'
+      </if>
+      <if test="sortNo !=null or sortNo ==0">
+        and "SORT_NO" = #{sortNo,jdbcType=INTEGER}
+      </if>
+      <if test="createTime !=null and createTime !=''">
+        and "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.ReportTypeEntity">
+    <id column="ID" property="id" jdbcType="INTEGER"/>
+    <result column="ROLE_ID" property="roleId" jdbcType="INTEGER"/>
+    <result column="CONTENT" property="content" jdbcType="VARCHAR"/>
+    <result column="SORT_NO" property="sortNo" jdbcType="INTEGER"/>
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "ROLE_ID" , "CONTENT" , "SORT_NO" , "CREATE_TIME"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "REPORT_TYPE" where "ID" = #{id,jdbcType=INTEGER} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.ReportTypeEntity">
+    select count(1) from "REPORT_TYPE"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.ReportTypeEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "REPORT_TYPE"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "REPORT_TYPE"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.ReportTypeEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "REPORT_TYPE"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from "REPORT_TYPE" where "ID" = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "REPORT_TYPE" where "ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective" parameterType="com.hengtianyi.dims.service.entity.ReportTypeEntity">
+    delete from "REPORT_TYPE"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.ReportTypeEntity">
+    insert into "REPORT_TYPE" ("ID" , "ROLE_ID" , "CONTENT" , "SORT_NO" , "CREATE_TIME") values (#{id,jdbcType=INTEGER} , #{roleId,jdbcType=INTEGER} , #{content,jdbcType=VARCHAR} , #{sortNo,jdbcType=INTEGER} , #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.ReportTypeEntity">
+    insert into "REPORT_TYPE"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null or id == 0">
+        "ID",
+      </if>
+      <if test="roleId != null or roleId == 0">
+        "ROLE_ID",
+      </if>
+      <if test="content != null and content !=''">
+        "CONTENT",
+      </if>
+      <if test="sortNo != null or sortNo == 0">
+        "SORT_NO",
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null or id == 0">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="roleId != null or roleId == 0">
+        #{roleId,jdbcType=INTEGER},
+      </if>
+      <if test="content != null and content !=''">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="sortNo != null or sortNo == 0">
+        #{sortNo,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+  <!-- 全部更新 -->
+  <update id="updateByPrimaryKey"
+    parameterType="com.hengtianyi.dims.service.entity.ReportTypeEntity">
+    update "REPORT_TYPE" set
+      "ROLE_ID" = #{roleId,jdbcType=INTEGER} , "CONTENT" = #{content,jdbcType=VARCHAR} , "SORT_NO" = #{sortNo,jdbcType=INTEGER} , "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+    where "ID" = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!-- 选择性更新 -->
+  <update id="updateByPrimaryKeySelective"
+    parameterType="com.hengtianyi.dims.service.entity.ReportTypeEntity">
+    update "REPORT_TYPE"
+    <set>
+      <if test="roleId != null or roleId == 0">
+        "ROLE_ID" = #{roleId,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        "CONTENT" = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="sortNo != null or sortNo == 0">
+        "SORT_NO" = #{sortNo,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where "ID" = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="listByRole" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from "REPORT_TYPE"
+    where "ROLE_ID" = #{roleId,jdbcType=INTEGER}
+    order by "SORT_NO" asc
+  </select>
+
+  <select id="contentByRole" parameterType="java.lang.Integer" resultType="java.lang.String">
+    select "CONTENT"
+    from "REPORT_TYPE"
+    where "ROLE_ID" = #{roleId,jdbcType=INTEGER}
+    order by "SORT_NO" asc
+  </select>
+
+  <select id="maxId" resultType="java.lang.Integer">
+    select max("ID") from "REPORT_TYPE"
+  </select>
+
+  <select id="contentByRoleSortNo" parameterType="java.lang.Integer" resultType="java.lang.String">
+    select "CONTENT"
+    from "REPORT_TYPE"
+    where "ROLE_ID" = #{roleId,jdbcType=INTEGER}
+    and "SORT_NO" = #{sortNo,jdbcType=INTEGER}
+    and rownum &lt;= 1
+  </select>
+</mapper>

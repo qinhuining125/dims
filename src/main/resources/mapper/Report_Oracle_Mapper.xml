@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  REPORT
+ remarks     
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.ReportDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.ReportEntity">
+    <id column="ID" property="id" jdbcType="DECIMAL"/>
+    <result column="AREA_CODE" property="areaCode" jdbcType="VARCHAR"/>
+    <result column="SERIAL_NO" property="serialNo" jdbcType="VARCHAR"/>
+    <result column="REPORT_NO" property="reportNo" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "AREA_CODE" , "SERIAL_NO" , "REPORT_NO"
+  </sql>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.ReportEntity">
+    insert into "REPORT" ("AREA_CODE" , "SERIAL_NO" , "REPORT_NO") values (#{areaCode,jdbcType=VARCHAR} , #{serialNo,jdbcType=VARCHAR} , #{reportNo,jdbcType=VARCHAR})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.ReportEntity">
+    insert into "REPORT"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="areaCode != null and areaCode !=''">
+        "AREA_CODE",
+      </if>
+      <if test="serialNo != null and serialNo !=''">
+        "SERIAL_NO",
+      </if>
+      <if test="reportNo != null and reportNo !=''">
+        "REPORT_NO",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="areaCode != null and areaCode !=''">
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="serialNo != null and serialNo !=''">
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null and reportNo !=''">
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="maxSerialNo" resultType="java.lang.String" parameterType="java.lang.String">
+    select "SERIAL_NO" from
+    (select "SERIAL_NO" from "REPORT" where "AREA_CODE"=#{areaCode,jdbcType=NVARCHAR} order by "ID" desc)
+    where rownum &lt;=1
+  </select>
+
+</mapper>

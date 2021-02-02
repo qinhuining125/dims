@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  VILLAGE
+ remarks     
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.VillageDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="areaCode !=null and areaCode !=''">
+        and "AREA_CODE" = #{areaCode,jdbcType=VARCHAR}
+      </if>
+      <if test="sortNo !=null and sortNo !=''">
+        and "SORT_NO" = #{sortNo,jdbcType=DECIMAL}
+      </if>
+      <if test="areaName !=null and areaName !=''">
+        and "AREA_NAME" like ('%' ||
+        replace(replace(#{areaName,jdbcType=VARCHAR},'%','\%'),'_','\_') || '%') escape '\'
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.VillageEntity">
+    <id column="AREA_CODE" property="areaCode" jdbcType="VARCHAR"/>
+    <id column="SORT_NO" property="sortNo" jdbcType="DECIMAL"/>
+    <result column="AREA_NAME" property="areaName" jdbcType="VARCHAR"/>
+    <result column="ID" property="userId" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "AREA_CODE" , "SORT_NO" , "AREA_NAME"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "VILLAGE" where "AREA_CODE" = #{id,jdbcType=VARCHAR} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.VillageEntity">
+    select count(1) from "VILLAGE"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.VillageEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "VILLAGE"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.VillageEntity">
+    insert into "VILLAGE" ("AREA_CODE" , "SORT_NO" , "AREA_NAME") values (#{areaCode,jdbcType=VARCHAR} , #{sortNo,jdbcType=DECIMAL} , #{areaName,jdbcType=VARCHAR})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.VillageEntity">
+    insert into "VILLAGE"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="areaCode != null and areaCode !=''">
+        "AREA_CODE",
+      </if>
+      <if test="sortNo != null or sortNo == 0">
+        "SORT_NO",
+      </if>
+      <if test="areaName != null and areaName !=''">
+        "AREA_NAME",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="areaCode != null and areaCode !=''">
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="sortNo != null or sortNo == 0">
+        #{sortNo,jdbcType=DECIMAL},
+      </if>
+      <if test="areaName != null and areaName !=''">
+        #{areaName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="townChilds" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    t."AREA_CODE" , t."SORT_NO" , t."AREA_NAME",s."ID"
+    from "VILLAGE" t
+    left join "SYS_USER" s on t."AREA_CODE"=s."AREA_CODE"
+    where t."AREA_CODE" like (#{townCode,jdbcType=VARCHAR} ||'%')
+    and s."ROLE_ID"=1002
+  </select>
+
+  <select id="areaList" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select "AREA_CODE" , "AREA_NAME"
+    <choose>
+      <when test="areaCode!=null and areaCode!=''">
+        from "VILLAGE"
+        where "AREA_CODE" like (#{areaCode,jdbcType=VARCHAR} ||'%')
+      </when>
+      <otherwise>
+        from "TOWNSHIP"
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 查询乡镇 -->
+  <select id="areaList2" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select "AREA_CODE" , "AREA_NAME"
+    <choose>
+      <when test="areaCode!=null and areaCode!=''">
+        from "VILLAGE"
+        where "AREA_CODE" like (#{areaCode,jdbcType=VARCHAR} ||'%')
+      </when>
+      <otherwise>
+        from (
+        select distinct  townVillage.AREA_CODE,
+        townVillage.AREA_NAME
+        from PATROL_INFO patrol
+        left join INSPECTION_PUBLICITY pub on patrol.id=pub.QR_CODE_ID
+        left join TASK_FLOW pubFlow on pub.id=pubFlow.task_id
+        left join sys_user u on pubFlow.RECEIVE_ID=u.id
+        left join (
+        select AREA_CODE,AREA_NAME from TOWNSHIP
+        union all
+        select AREA_CODE,AREA_NAME from VILLAGE
+        ) townVillage on townVillage.AREA_CODE=SUBSTR(u.AREA_CODE, 1, 9)
+        where CURRENT_DATE &gt;= patrol.START_TIME and CURRENT_DATE &lt;= patrol.END_TIME
+        ) temp
+      </otherwise>
+    </choose>
+  </select>
+
+
+<!--  <select id="areaList2" resultMap="BaseResultMap">-->
+<!--    select distinct  townVillage.AREA_CODE,-->
+<!--    townVillage.AREA_NAME-->
+<!--    from PATROL_INFO patrol-->
+<!--    left join INSPECTION_PUBLICITY pub on patrol.id=pub.QR_CODE_ID-->
+<!--    left join TASK_FLOW pubFlow on pub.id=pubFlow.task_id-->
+<!--    left join sys_user u on pubFlow.RECEIVE_ID=u.id-->
+<!--    left join (-->
+<!--    select AREA_CODE,AREA_NAME from TOWNSHIP-->
+<!--    union all-->
+<!--    select AREA_CODE,AREA_NAME from VILLAGE-->
+<!--    ) townVillage on townVillage.AREA_CODE=SUBSTR(u.AREA_CODE, 1, 9)-->
+<!--    where CURRENT_DATE &gt;= patrol.START_TIME and CURRENT_DATE &lt;= patrol.END_TIME-->
+
+<!--  </select>-->
+
+  <select id="townChilds2" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+    t."AREA_CODE" , t."SORT_NO" , t."AREA_NAME",s."ID"
+    from "VILLAGE" t
+    left join "SYS_USER" s on t."AREA_CODE"=s."AREA_CODE"
+    where
+    t."AREA_CODE" like (#{townCode,jdbcType=VARCHAR} ||'%')
+    and t."AREA_CODE" in (
+    select distinct
+    townVillage.AREA_CODE as "AREA_CODE"
+    from PATROL_INFO patrol
+    left join INSPECTION_PUBLICITY pub on patrol.id=pub.QR_CODE_ID
+    left join TASK_FLOW pubFlow on pub.id=pubFlow.task_id
+    left join sys_user u on pubFlow.RECEIVE_ID=u.id
+    left join (
+    select AREA_CODE,AREA_NAME from TOWNSHIP
+    union all
+    select AREA_CODE,AREA_NAME from VILLAGE
+    ) townVillage on townVillage.AREA_CODE=SUBSTR(u.AREA_CODE, 1, 12)
+    where CURRENT_DATE &gt;= patrol.START_TIME and CURRENT_DATE &lt;= patrol.END_TIME
+    )
+    and s."ROLE_ID"=1002
+  </select>
+
+
+</mapper>

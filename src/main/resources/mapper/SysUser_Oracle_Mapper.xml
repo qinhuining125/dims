@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  SYS_USER
+ remarks     
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.SysUserDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="id !=null and id !=''">
+        and "ID" = #{id,jdbcType=CHAR}
+      </if>
+      <if test="userAccount !=null and userAccount !=''">
+        and "USER_ACCOUNT" = #{userAccount,jdbcType=VARCHAR}
+      </if>
+      <if test="userName !=null and userName !=''">
+        and "USER_NAME" like ('%' ||
+        replace(replace(#{userName,jdbcType=VARCHAR},'%','\%'),'_','\_') || '%') escape '\'
+      </if>
+      <if test="enabled !=null or enabled==0">
+        and "ENABLED" = #{enabled,jdbcType=DECIMAL}
+      </if>
+      <if test="sex !=null and sex !=''">
+        and "SEX" = #{sex,jdbcType=VARCHAR}
+      </if>
+      <if test="createTime !=null and createTime !=''">
+        and "CREATE_TIME" = #{createTime,jdbcType=DECIMAL}
+      </if>
+      <if test="areaCode !=null and areaCode !=''">
+        and "AREA_CODE" like (#{areaCode,jdbcType=VARCHAR} ||'%')
+      </if>
+      <if test="townCode !=null and townCode !=''">
+        and "AREA_CODE" like (#{townCode,jdbcType=VARCHAR} ||'%')
+      </if>
+      <if test="roleId !=null and roleId !=''">
+        and "ROLE_ID" = #{roleId,jdbcType=DECIMAL}
+      </if>
+      <if test="areaName !=null and areaName !=''">
+        and "AREA_NAME" like ('%' ||
+        replace(replace(#{areaName,jdbcType=VARCHAR},'%','\%'),'_','\_') || '%') escape '\'
+      </if>
+      <if test="idCard !=null and idCard !=''">
+        and "ID_CARD" = #{idCard,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.SysUserEntity">
+    <id column="ID" property="id" jdbcType="CHAR"/>
+    <result column="USER_ACCOUNT" property="userAccount" jdbcType="VARCHAR"/>
+    <result column="PASSWORD" property="password" jdbcType="VARCHAR"/>
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR"/>
+    <result column="ENABLED" property="enabled" jdbcType="DECIMAL"/>
+    <result column="SEX" property="sex" jdbcType="VARCHAR"/>
+    <result column="PHONE" property="phone" jdbcType="VARCHAR"/>
+    <result column="CREATE_TIME" property="createTime" jdbcType="DECIMAL"/>
+    <result column="AREA_CODE" property="areaCode" jdbcType="VARCHAR"/>
+    <result column="ROLE_ID" property="roleId" jdbcType="DECIMAL"/>
+    <result column="AREA_NAME" property="areaName" jdbcType="VARCHAR"/>
+    <result column="ID_CARD" property="idCard" jdbcType="VARCHAR"/>
+    <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+    <result column="AUTH_ID" property="authId" jdbcType="DECIMAL"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "USER_ACCOUNT" , "USER_NAME" , "ENABLED" , "SEX" , "PHONE" , "CREATE_TIME" , "AREA_CODE" , "ROLE_ID" , "AREA_NAME" , "ID_CARD" , "REMARK" , "AUTH_ID" , "PASSWORD"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "SYS_USER" where "ID" = #{id,jdbcType=CHAR} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.SysUserEntity">
+    select count(1) from "SYS_USER"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.SysUserEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "SYS_USER"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "SYS_USER"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.SysUserEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "SYS_USER"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from "SYS_USER" where "ID" = #{id,jdbcType=CHAR}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "SYS_USER" where "ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective" parameterType="com.hengtianyi.dims.service.entity.SysUserEntity">
+    delete from "SYS_USER"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.SysUserEntity">
+    insert into "SYS_USER" ("ID" , "USER_ACCOUNT" , "USER_NAME" , "ENABLED" , "SEX" , "PHONE" , "CREATE_TIME" , "AREA_CODE" , "ROLE_ID" , "AREA_NAME" , "ID_CARD" , "REMARK" , "AUTH_ID" , "PASSWORD") values (#{id,jdbcType=CHAR} , #{userAccount,jdbcType=VARCHAR} , #{userName,jdbcType=VARCHAR} , #{enabled,jdbcType=DECIMAL} , #{sex,jdbcType=VARCHAR} , #{phone,jdbcType=VARCHAR} , #{createTime,jdbcType=DECIMAL} , #{areaCode,jdbcType=VARCHAR} , #{roleId,jdbcType=DECIMAL} , #{areaName,jdbcType=VARCHAR} , #{idCard,jdbcType=VARCHAR} , #{remark,jdbcType=VARCHAR}, #{authId,jdbcType=DECIMAL}, #{password,jdbcType=VARCHAR})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.SysUserEntity">
+    insert into "SYS_USER"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        "ID",
+      </if>
+      <if test="userAccount != null and userAccount !=''">
+        "USER_ACCOUNT",
+      </if>
+      <if test="userName != null and userName !=''">
+        "USER_NAME",
+      </if>
+      <if test="enabled != null or enabled == 0">
+        "ENABLED",
+      </if>
+      <if test="sex != null and sex !=''">
+        "SEX",
+      </if>
+      <if test="phone != null and phone !=''">
+        "PHONE",
+      </if>
+      <if test="createTime != null or createTime == 0">
+        "CREATE_TIME",
+      </if>
+      <if test="areaCode != null and areaCode !=''">
+        "AREA_CODE",
+      </if>
+      <if test="roleId != null or roleId == 0">
+        "ROLE_ID",
+      </if>
+      <if test="areaName != null and areaName !=''">
+        "AREA_NAME",
+      </if>
+      <if test="idCard != null and idCard !=''">
+        "ID_CARD",
+      </if>
+      <if test="remark != null and remark !=''">
+        "REMARK",
+      </if>
+      <if test="authId != null or authId == 0">
+        "AUTH_ID",
+      </if>
+      <if test="password != null and password !=''">
+        "PASSWORD",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        #{id,jdbcType=CHAR},
+      </if>
+      <if test="userAccount != null and userAccount !=''">
+        #{userAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null and userName !=''">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="enabled != null or enabled == 0">
+        #{enabled,jdbcType=DECIMAL},
+      </if>
+      <if test="sex != null and sex !=''">
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null and phone !=''">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null or createTime == 0">
+        #{createTime,jdbcType=DECIMAL},
+      </if>
+      <if test="areaCode != null and areaCode !=''">
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null or roleId == 0">
+        #{roleId,jdbcType=DECIMAL},
+      </if>
+      <if test="areaName != null and areaName !=''">
+        #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null and idCard !=''">
+        #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null and remark !=''">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="authId != null or authId == 0">
+        #{authId,jdbcType=DECIMAL},
+      </if>
+      <if test="password != null and password !=''">
+        #{password,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+  <!-- 全部更新 -->
+  <update id="updateByPrimaryKey" parameterType="com.hengtianyi.dims.service.entity.SysUserEntity">
+    update "SYS_USER" set
+      "USER_ACCOUNT" = #{userAccount,jdbcType=VARCHAR} , "USER_NAME" = #{userName,jdbcType=VARCHAR} , "ENABLED" = #{enabled,jdbcType=DECIMAL} , "SEX" = #{sex,jdbcType=VARCHAR} , "PHONE" = #{phone,jdbcType=VARCHAR} , "CREATE_TIME" = #{createTime,jdbcType=DECIMAL} , "AREA_CODE" = #{areaCode,jdbcType=VARCHAR} , "ROLE_ID" = #{roleId,jdbcType=DECIMAL} , "AREA_NAME" = #{areaName,jdbcType=VARCHAR} , "ID_CARD" = #{idCard,jdbcType=VARCHAR} , "REMARK" = #{remark,jdbcType=VARCHAR} , "AUTH_ID" = #{authId,jdbcType=DECIMAL} , "PASSWORD" = #{password,jdbcType=VARCHAR}
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <!-- 选择性更新 -->
+  <update id="updateByPrimaryKeySelective"
+    parameterType="com.hengtianyi.dims.service.entity.SysUserEntity">
+    update "SYS_USER"
+    <set>
+      <if test="userAccount != null">
+        "USER_ACCOUNT" = #{userAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null">
+        "USER_NAME" = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="enabled != null or enabled == 0">
+        "ENABLED" = #{enabled,jdbcType=DECIMAL},
+      </if>
+      <if test="sex != null">
+        "SEX" = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        "PHONE" = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null or createTime == 0">
+        "CREATE_TIME" = #{createTime,jdbcType=DECIMAL},
+      </if>
+      <if test="areaCode != null">
+        "AREA_CODE" = #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null or roleId == 0">
+        "ROLE_ID" = #{roleId,jdbcType=DECIMAL},
+      </if>
+      <if test="areaName != null">
+        "AREA_NAME" = #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null">
+        "ID_CARD" = #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        "REMARK" = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="authId != null or authId == 0">
+        "AUTH_ID" = #{authId,jdbcType=DECIMAL},
+      </if>
+      <if test="password != null">
+        "PASSWORD" = #{password,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+  <!-- 验证模块名是否已经存在 -->
+  <select id="checkRepeat" resultType="java.lang.String" parameterType="java.lang.String">
+    select "ID" from "SYS_USER" where  "USER_ACCOUNT" = #{userAccount,jdbcType=VARCHAR}
+    and rownum &lt;= 1
+  </select>
+  <!-- 根据登录账号（唯一）查询 -->
+  <select id="selectByUserAccount" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "SYS_USER" where "USER_ACCOUNT" = #{userAccount,jdbcType=CHAR}
+    and rownum &lt;= 1
+  </select>
+  <!-- 用户登录表，字段与实体的映射 -->
+  <resultMap id="UserSecurityResultMap"
+    type="com.hengtianyi.dims.service.entity.SysUserSecurityEntity">
+    <id column="ID" property="id" jdbcType="CHAR"/>
+    <result column="CIPHER_TEXT" property="cipherText" jdbcType="VARCHAR"/>
+    <result column="ITERATIONS" property="iterations" jdbcType="INTEGER"/>
+    <result column="SALT" property="salt" jdbcType="VARCHAR"/>
+    <result column="DK_LEN" property="dkLen" jdbcType="INTEGER"/>
+    <result column="LAST_LOGIN" property="lastLogin" jdbcType="BIGINT"/>
+    <result column="LAST_EDIT" property="lastEdit" jdbcType="BIGINT"/>
+  </resultMap>
+
+  <!-- 根据用户ID获取用户加密信息 -->
+  <select id="getUserSecurity" resultMap="UserSecurityResultMap"
+    parameterType="java.lang.String">
+    select "ID" , "CIPHER_TEXT" , "ITERATIONS" , "SALT" , "DK_LEN" , "LAST_LOGIN" , "LAST_EDIT"
+    from "SYS_USER_SECURITY" where "ID" = #{id,jdbcType=CHAR}
+    and rownum &lt;= 1
+  </select>
+
+  <!-- 新增用户加密信息 -->
+  <insert id="insertUserSecurity"
+    parameterType="com.hengtianyi.dims.service.entity.SysUserSecurityEntity">
+    insert into "SYS_USER_SECURITY" ("ID","CIPHER_TEXT","ITERATIONS","SALT","DK_LEN","LAST_EDIT")
+    values (#{id,jdbcType=CHAR} ,#{cipherText,jdbcType=VARCHAR} ,
+    #{iterations,jdbcType=INTEGER} ,#{salt,jdbcType=VARCHAR} ,
+    #{dkLen,jdbcType=INTEGER} , #{lastEdit,jdbcType=BIGINT})
+  </insert>
+
+  <!-- 更新用户加密信息 -->
+  <update id="updateUserSecurity"
+    parameterType="com.hengtianyi.dims.service.entity.SysUserSecurityEntity">
+    update "SYS_USER_SECURITY" set
+    "CIPHER_TEXT" = #{cipherText,jdbcType=VARCHAR} , "ITERATIONS" = #{iterations,jdbcType=INTEGER} ,
+    "SALT" = #{salt,jdbcType=VARCHAR} , "DK_LEN" = #{dkLen,jdbcType=INTEGER} ,
+    "LAST_EDIT" = #{lastEdit,jdbcType=BIGINT} where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <!-- 根据用户ID集合删除登录信息 -->
+  <delete id="deleteUserSecurity" parameterType="java.util.List">
+    delete from "SYS_USER_SECURITY" where "ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator=","
+      close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 根据用户ID修改登录时间 -->
+  <update id="updateUserLoginTime">
+    update "SYS_USER_SECURITY" set "LAST_LOGIN" = #{time,jdbcType=BIGINT}
+     where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <select id="superiorUser" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from "SYS_USER"
+    where "AREA_CODE" = #{areaCode,jdbcType=VARCHAR}
+    and "ROLE_ID" = #{roleId,jdbcType=INTEGER}
+    and rownum &lt;= 1
+  </select>
+
+
+  <select id="nonGrid" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from "SYS_USER"
+    where "ROLE_ID" &gt; 1001
+  </select>
+  <!-- 字段与实体的映射 -->
+  <resultMap id="dtoResultMap" type="com.hengtianyi.dims.service.dto.UserAreaDto">
+    <id column="ID" property="userId" jdbcType="CHAR"/>
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR"/>
+    <result column="AREA_CODE" property="areaCode" jdbcType="VARCHAR"/>
+    <result column="ROLE_ID" property="roleId" jdbcType="DECIMAL"/>
+    <result column="AREA_NAME" property="areaName" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <select id="childTaskUser" resultMap="dtoResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from "SYS_USER"
+    where "AREA_CODE" like (#{areaCode,jdbcType=VARCHAR} || '%')
+    and "ROLE_ID" = 1002
+    order by "USER_ACCOUNT" asc
+  </select>
+
+  <!-- 根据角色ID查询对应的用户ID集合 -->
+  <select id="getUserIdByRoleId" resultMap="BaseResultMap"
+          parameterType="java.lang.Integer">
+    select
+    <include refid="Base_Column_List"/>
+    from "SYS_USER"
+    where "ROLE_ID" =  #{roleId,jdbcType=INTEGER}
+  </select>
+
+</mapper>

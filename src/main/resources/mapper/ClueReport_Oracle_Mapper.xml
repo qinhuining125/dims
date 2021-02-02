@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  CLUE_REPORT
+ remarks     问题线索报送
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.ClueReportDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="id !=null and id !=''">
+        and "ID" = #{id,jdbcType=CHAR}
+      </if>
+      <if test="userId !=null and userId !=''">
+        and "USER_ID" = #{userId,jdbcType=CHAR}
+      </if>
+      <if test="reportIds !=null and reportIds !=''">
+        and "REPORT_IDS" like ('%' ||
+        replace(replace(#{reportIds,jdbcType=VARCHAR},'%','\%'),'_','\_') || '%') escape '\'
+      </if>
+      <if test="createTime !=null and createTime !=''">
+        and "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="state !=null or state ==0">
+        and "STATE" = #{state,jdbcType=DECIMAL}
+      </if>
+      <if test="reportRoleId !=null and reportRoleId !=''">
+        and "REPORT_ROLE_ID" = #{reportRoleId,jdbcType=DECIMAL}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.ClueReportEntity">
+    <id column="ID" property="id" jdbcType="CHAR"/>
+    <result column="USER_ID" property="userId" jdbcType="CHAR"/>
+    <result column="REPORT_IDS" property="reportIds" jdbcType="VARCHAR"/>
+    <result column="CLUE_DESCRIBE" property="clueDescribe" jdbcType="VARCHAR"/>
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="STATE" property="state" jdbcType="DECIMAL"/>
+    <result column="REPORT_ROLE_ID" property="reportRoleId" jdbcType="DECIMAL"/>
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR"/>
+    <result column="CLUE_NO" property="clueNo" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "USER_ID" , "REPORT_IDS" , "CLUE_DESCRIBE" , "CREATE_TIME" , "STATE" , "REPORT_ROLE_ID" , "CLUE_NO"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "CLUE_REPORT" where "ID" = #{id,jdbcType=CHAR} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.ClueReportEntity">
+    select count(1) from "CLUE_REPORT"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.ClueReportEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "CLUE_REPORT"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "CLUE_REPORT"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.ClueReportEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "CLUE_REPORT"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from "CLUE_REPORT" where "ID" = #{id,jdbcType=CHAR}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "CLUE_REPORT" where "ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective" parameterType="com.hengtianyi.dims.service.entity.ClueReportEntity">
+    delete from "CLUE_REPORT"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.ClueReportEntity">
+    insert into "CLUE_REPORT" ("ID" , "USER_ID" , "REPORT_IDS" , "CLUE_DESCRIBE" , "CREATE_TIME" , "STATE" , "REPORT_ROLE_ID") values (#{id,jdbcType=CHAR} , #{userId,jdbcType=CHAR} , #{reportIds,jdbcType=VARCHAR} , #{clueDescribe,jdbcType=VARCHAR} , #{createTime,jdbcType=TIMESTAMP} , #{state,jdbcType=DECIMAL} , #{reportRoleId,jdbcType=DECIMAL})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.ClueReportEntity">
+    insert into "CLUE_REPORT"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        "ID",
+      </if>
+      <if test="userId != null and userId !=''">
+        "USER_ID",
+      </if>
+      <if test="reportIds != null and reportIds !=''">
+        "REPORT_IDS",
+      </if>
+      <if test="clueDescribe != null and clueDescribe !=''">
+        "CLUE_DESCRIBE",
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME",
+      </if>
+      <if test="state != null or state == 0">
+        "STATE",
+      </if>
+      <if test="reportRoleId != null or reportRoleId == 0">
+        "REPORT_ROLE_ID",
+      </if>
+      <if test="clueNo != null and clueNo !=''">
+        "CLUE_NO",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        #{id,jdbcType=CHAR},
+      </if>
+      <if test="userId != null and userId !=''">
+        #{userId,jdbcType=CHAR},
+      </if>
+      <if test="reportIds != null and reportIds !=''">
+        #{reportIds,jdbcType=VARCHAR},
+      </if>
+      <if test="clueDescribe != null and clueDescribe !=''">
+        #{clueDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null or state == 0">
+        #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="reportRoleId != null or reportRoleId == 0">
+        #{reportRoleId,jdbcType=DECIMAL},
+      </if>
+      <if test="clueNo != null and clueNo !=''">
+        #{clueNo,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+
+
+  <!-- 全部更新 -->
+  <update id="updateByPrimaryKey"
+    parameterType="com.hengtianyi.dims.service.entity.ClueReportEntity">
+    update "CLUE_REPORT" set
+      "USER_ID" = #{userId,jdbcType=CHAR} , "REPORT_IDS" = #{reportIds,jdbcType=VARCHAR} , "CLUE_DESCRIBE" = #{clueDescribe,jdbcType=VARCHAR} , "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP} , "STATE" = #{state,jdbcType=DECIMAL} , "REPORT_ROLE_ID" = #{reportRoleId,jdbcType=DECIMAL} , "CLUE_NO" = #{clueNo,jdbcType=VARCHAR}
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <!-- 选择性更新 -->
+  <update id="updateByPrimaryKeySelective"
+    parameterType="com.hengtianyi.dims.service.entity.ClueReportEntity">
+    update "CLUE_REPORT"
+    <set>
+      <if test="userId != null">
+        "USER_ID" = #{userId,jdbcType=CHAR},
+      </if>
+      <if test="reportIds != null">
+        "REPORT_IDS" = #{reportIds,jdbcType=VARCHAR},
+      </if>
+      <if test="clueDescribe != null">
+        "CLUE_DESCRIBE" = #{clueDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null or state == 0">
+        "STATE" = #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="reportRoleId != null or reportRoleId == 0">
+        "REPORT_ROLE_ID" = #{reportRoleId,jdbcType=DECIMAL},
+      </if>
+      <if test="clueNo != null">
+        "CLUE_NO" = #{clueNo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <!--分页-->
+  <select id="pagelist" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.dto.QueryDto">
+    select
+    p."ID" , p."USER_ID" , p."REPORT_IDS" , p."CLUE_DESCRIBE" , p."CREATE_TIME" , p."STATE" ,
+    p."REPORT_ROLE_ID",p."CLUE_NO",
+    s."USER_NAME"
+    from (select ROWNUM as "ROW_ID",
+    <include refid="Base_Column_List"/>
+    from (select t.* from "CLUE_REPORT" t
+    <include refid="page_where"/>
+    order by t.create_time desc)
+    where ROWNUM &lt;= #{dto.end}) p
+    left join "SYS_USER" s on p."USER_ID"=s."ID"
+    where p."ROW_ID" &gt;= #{dto.first}
+  </select>
+
+  <select id="pagecount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.dto.QueryDto">
+    select count(1) from "CLUE_REPORT" t
+    <include refid="page_where"/>
+  </select>
+
+  <sql id="page_where">
+    <where>
+      <choose>
+        <when test="dto.userId != null and dto.userId != ''">
+          <if test="dto.roleId == 1004 or dto.roleId == 1005">
+            and t."USER_ID" in (
+            select a.id from sys_user a left join rel_user_area b on a.area_code like (b.area_code
+            ||'%')
+            where b.user_id= #{dto.userId,jdbcType=CHAR} and a.area_code is not null
+            <if test="dto.areaCode!=null and dto.areaCode !=''">
+              and a.area_code like (#{dto.areaCode,jdbcType=CHAR} ||'%')
+            </if>
+            and a.role_id &lt;1003)
+            <if test="dto.authId != null and dto.authId==1">
+              and t."REPORT_IDS" like '%9%'
+            </if>
+            <!--<if test="dto.authId != null and dto.authId==2">
+              and t."REPORT_IDS" not like '%9%'
+            </if>-->
+          </if>
+          <if test="dto.roleId == 1003">
+            and t."USER_ID" in (
+            select a.id from sys_user a left join rel_user_area b on a.area_code like (b.area_code
+            ||'%')
+            where b.user_id= #{dto.userId,jdbcType=CHAR} and a.area_code is not null
+            <if test="dto.areaCode!=null and dto.areaCode !=''">
+              and a.area_code like (#{dto.areaCode,jdbcType=VARCHAR} ||'%')
+            </if>
+            and a.role_id &lt;1003)
+          </if>
+          <if test="dto.roleId &lt;1003">
+            and t."USER_ID" = #{dto.userId,jdbcType=CHAR}
+          </if>
+        </when>
+        <otherwise>
+          <if test="dto.areaCode!=null and dto.areaCode !=''">
+            and t."USER_ID" in (select a.id from sys_user a
+            where a.area_code like (#{dto.areaCode,jdbcType=VARCHAR} ||'%'))
+          </if>
+        </otherwise>
+      </choose>
+      <if test="dto.state !=null or dto.state ==0">
+        and t."STATE" = #{dto.state,jdbcType=DECIMAL}
+      </if>
+      <if test="dto.startTime!=null and dto.startTime !=''">
+        and t."CREATE_TIME" >= to_date(#{dto.startTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+      </if>
+      <if test="dto.endTime!=null and dto.endTime !=''">
+        and t."CREATE_TIME" &lt; to_date(#{dto.endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+      </if>
+      <if test="dto.reportRoleId !=null and dto.reportRoleId !=''">
+        and t."REPORT_ROLE_ID" = #{dto.reportRoleId,jdbcType=DECIMAL}
+      </if>
+    </where>
+  </sql>
+
+  <select id="getEchartsData" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from "CLUE_REPORT"
+    where 1=1
+    <choose>
+      <when test="endTime!=null and endTime!=''">
+        and "CREATE_TIME" >= to_date(#{startTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+        and "CREATE_TIME" &lt; to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+      </when>
+      <otherwise>
+        and "CREATE_TIME" &lt; sysdate
+      </otherwise>
+    </choose>
+    <if test="areaCode!=null and areaCode!=''">
+      and "USER_ID" in (
+      select a.id from sys_user a where a.area_code like (#{areaCode,jdbcType=VARCHAR} ||'%')
+      and a.role_id &lt;1003
+      )
+    </if>
+  </select>
+</mapper>

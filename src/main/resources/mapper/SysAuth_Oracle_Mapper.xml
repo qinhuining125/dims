@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  SYS_AUTH
+ remarks     
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.SysAuthDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="id !=null and id !=''">
+        and "ID" = #{id,jdbcType=CHAR}
+      </if>
+      <if test="authName !=null and authName !=''">
+        and "AUTH_NAME" like ('%' ||
+        replace(replace(#{authName,jdbcType=VARCHAR},'%','\%'),'_','\_') || '%') escape '\'
+      </if>
+      <if test="authCode !=null and authCode !=''">
+        and "AUTH_CODE" like ('%' ||
+        replace(replace(#{authCode,jdbcType=VARCHAR},'%','\%'),'_','\_') || '%') escape '\'
+      </if>
+      <if test="enable !=null and enable !=''">
+        and "ENABLE" = #{enable,jdbcType=NUMERIC}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.SysAuthEntity">
+    <id column="ID" property="id" jdbcType="CHAR"/>
+    <result column="AUTH_NAME" property="authName" jdbcType="VARCHAR"/>
+    <result column="AUTH_CODE" property="authCode" jdbcType="VARCHAR"/>
+    <result column="ENABLE" property="enable" jdbcType="NUMERIC"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "AUTH_NAME" , "AUTH_CODE" , "ENABLE"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "SYS_AUTH" where "ID" = #{id,jdbcType=CHAR} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.SysAuthEntity">
+    select count(1) from "SYS_AUTH"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.SysAuthEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "SYS_AUTH"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "SYS_AUTH"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.SysAuthEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "SYS_AUTH"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from "SYS_AUTH" where "ID" = #{id,jdbcType=CHAR}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "SYS_AUTH" where "ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective" parameterType="com.hengtianyi.dims.service.entity.SysAuthEntity">
+    delete from "SYS_AUTH"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.SysAuthEntity">
+    insert into "SYS_AUTH" ("ID" , "AUTH_NAME" , "AUTH_CODE" , "ENABLE") values (#{id,jdbcType=CHAR} , #{authName,jdbcType=VARCHAR} , #{authCode,jdbcType=VARCHAR} , #{enable,jdbcType=NUMERIC})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.SysAuthEntity">
+    insert into "SYS_AUTH"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        "ID",
+      </if>
+      <if test="authName != null and authName !=''">
+        "AUTH_NAME",
+      </if>
+      <if test="authCode != null and authCode !=''">
+        "AUTH_CODE",
+      </if>
+      <if test="enable != null or enable == 0">
+        "ENABLE",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        #{id,jdbcType=CHAR},
+      </if>
+      <if test="authName != null and authName !=''">
+        #{authName,jdbcType=VARCHAR},
+      </if>
+      <if test="authCode != null and authCode !=''">
+        #{authCode,jdbcType=VARCHAR},
+      </if>
+      <if test="enable != null or enable == 0">
+        #{enable,jdbcType=NUMERIC},
+      </if>
+    </trim>
+  </insert>
+
+
+  <!-- 全部更新 -->
+  <update id="updateByPrimaryKey" parameterType="com.hengtianyi.dims.service.entity.SysAuthEntity">
+    update "SYS_AUTH" set
+      "AUTH_NAME" = #{authName,jdbcType=VARCHAR} , "AUTH_CODE" = #{authCode,jdbcType=VARCHAR} , "ENABLE" = #{enable,jdbcType=NUMERIC}
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <!-- 选择性更新 -->
+  <update id="updateByPrimaryKeySelective"
+    parameterType="com.hengtianyi.dims.service.entity.SysAuthEntity">
+    update "SYS_AUTH"
+    <set>
+      <if test="authName != null">
+        "AUTH_NAME" = #{authName,jdbcType=VARCHAR},
+      </if>
+      <if test="authCode != null">
+        "AUTH_CODE" = #{authCode,jdbcType=VARCHAR},
+      </if>
+      <if test="enable != null or enable == 0">
+        "ENABLE" = #{enable,jdbcType=NUMERIC},
+      </if>
+    </set>
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <!-- 根据权限ID集合获取启用的权限代码集合 -->
+  <select id="getAuthCodeByAuthId" resultType="java.lang.String"
+    parameterType="java.util.List">
+    select "AUTH_CODE" from "SYS_AUTH" where "ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator=","
+      close=")">
+      #{item}
+    </foreach>
+  </select>
+
+</mapper>

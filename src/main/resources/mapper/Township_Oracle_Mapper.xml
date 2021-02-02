@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  TOWNSHIP
+ remarks     
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.TownshipDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="areaCode !=null and areaCode !=''">
+        and "AREA_CODE" = #{areaCode,jdbcType=VARCHAR}
+      </if>
+      <if test="areaName !=null and areaName !=''">
+        and "AREA_NAME" like ('%' ||
+        replace(replace(#{areaName,jdbcType=VARCHAR},'%','\%'),'_','\_') || '%') escape '\'
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.TownshipEntity">
+    <id column="AREA_CODE" property="areaCode" jdbcType="VARCHAR"/>
+    <result column="AREA_NAME" property="areaName" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "AREA_CODE" , "AREA_NAME"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "TOWNSHIP" where "AREA_CODE" = #{id,jdbcType=VARCHAR} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据AreaCode查找 -->
+  <select id="selectByAreaCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "TOWNSHIP" where "AREA_CODE" = #{areaCode,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.TownshipEntity">
+    select count(1) from "TOWNSHIP"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.TownshipEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "TOWNSHIP"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "TOWNSHIP"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.TownshipEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "TOWNSHIP"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from "TOWNSHIP" where "AREA_CODE" = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "TOWNSHIP" where "AREA_CODE" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective" parameterType="com.hengtianyi.dims.service.entity.TownshipEntity">
+    delete from "TOWNSHIP"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.TownshipEntity">
+    insert into "TOWNSHIP" ("AREA_CODE" , "AREA_NAME") values (#{areaCode,jdbcType=VARCHAR} , #{areaName,jdbcType=VARCHAR})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.TownshipEntity">
+    insert into "TOWNSHIP"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="areaCode != null and areaCode !=''">
+        "AREA_CODE",
+      </if>
+      <if test="areaName != null and areaName !=''">
+        "AREA_NAME",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="areaCode != null and areaCode !=''">
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="areaName != null and areaName !=''">
+        #{areaName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+  <!-- 全部更新 -->
+  <update id="updateByPrimaryKey" parameterType="com.hengtianyi.dims.service.entity.TownshipEntity">
+    update "TOWNSHIP" set
+      "AREA_NAME" = #{areaName,jdbcType=VARCHAR}
+    where "AREA_CODE" = #{areaCode,jdbcType=VARCHAR}
+  </update>
+
+  <!-- 选择性更新 -->
+  <update id="updateByPrimaryKeySelective"
+    parameterType="com.hengtianyi.dims.service.entity.TownshipEntity">
+    update "TOWNSHIP"
+    <set>
+      <if test="areaName != null">
+        "AREA_NAME" = #{areaName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where "AREA_CODE" = #{areaCode,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

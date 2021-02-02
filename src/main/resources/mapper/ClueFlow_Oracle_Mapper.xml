@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  CLUE_FLOW
+ remarks     线索流程
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.ClueFlowDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="id !=null and id !=''">
+        and "ID" = #{id,jdbcType=CHAR}
+      </if>
+      <if test="clueId !=null and clueId !=''">
+        and "CLUE_ID" = #{clueId,jdbcType=CHAR}
+      </if>
+      <if test="state !=null and state !=''">
+        and "STATE" = #{state,jdbcType=DECIMAL}
+      </if>
+      <if test="receiveId !=null and receiveId !=''">
+        and "RECEIVE_ID" = #{receiveId,jdbcType=CHAR}
+      </if>
+      <if test="createTime !=null and createTime !=''">
+        and "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.ClueFlowEntity">
+    <id column="ID" property="id" jdbcType="CHAR"/>
+    <result column="CLUE_ID" property="clueId" jdbcType="CHAR"/>
+    <result column="STATE" property="state" jdbcType="DECIMAL"/>
+    <result column="RECEIVE_ID" property="receiveId" jdbcType="CHAR"/>
+    <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="RECEIVE_NAME" property="receiveName" jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "CLUE_ID" , "STATE" , "RECEIVE_ID" , "REMARK" , "CREATE_TIME"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "CLUE_FLOW" where "ID" = #{id,jdbcType=CHAR} and rownum &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.ClueFlowEntity">
+    select count(1) from "CLUE_FLOW"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.ClueFlowEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "CLUE_FLOW"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "CLUE_FLOW"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.ClueFlowEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "CLUE_FLOW"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from "CLUE_FLOW" where "ID" = #{id,jdbcType=CHAR}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "CLUE_FLOW" where "ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective" parameterType="com.hengtianyi.dims.service.entity.ClueFlowEntity">
+    delete from "CLUE_FLOW"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.ClueFlowEntity">
+    insert into "CLUE_FLOW" ("ID" , "CLUE_ID" , "STATE" , "RECEIVE_ID" , "REMARK" , "CREATE_TIME") values (#{id,jdbcType=CHAR} , #{clueId,jdbcType=CHAR} , #{state,jdbcType=DECIMAL} , #{receiveId,jdbcType=CHAR} , #{remark,jdbcType=VARCHAR} , #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.ClueFlowEntity">
+    insert into "CLUE_FLOW"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        "ID",
+      </if>
+      <if test="clueId != null and clueId !=''">
+        "CLUE_ID",
+      </if>
+      <if test="state != null or state == 0">
+        "STATE",
+      </if>
+      <if test="receiveId != null and receiveId !=''">
+        "RECEIVE_ID",
+      </if>
+      <if test="remark != null and remark !=''">
+        "REMARK",
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        #{id,jdbcType=CHAR},
+      </if>
+      <if test="clueId != null and clueId !=''">
+        #{clueId,jdbcType=CHAR},
+      </if>
+      <if test="state != null or state == 0">
+        #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="receiveId != null and receiveId !=''">
+        #{receiveId,jdbcType=CHAR},
+      </if>
+      <if test="remark != null and remark !=''">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+  <!-- 全部更新 -->
+  <update id="updateByPrimaryKey" parameterType="com.hengtianyi.dims.service.entity.ClueFlowEntity">
+    update "CLUE_FLOW" set
+      "CLUE_ID" = #{clueId,jdbcType=CHAR} , "STATE" = #{state,jdbcType=DECIMAL} , "RECEIVE_ID" = #{receiveId,jdbcType=CHAR} , "REMARK" = #{remark,jdbcType=VARCHAR} , "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <!-- 选择性更新 -->
+  <update id="updateByPrimaryKeySelective"
+    parameterType="com.hengtianyi.dims.service.entity.ClueFlowEntity">
+    update "CLUE_FLOW"
+    <set>
+      <if test="clueId != null">
+        "CLUE_ID" = #{clueId,jdbcType=CHAR},
+      </if>
+      <if test="state != null or state == 0">
+        "STATE" = #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="receiveId != null">
+        "RECEIVE_ID" = #{receiveId,jdbcType=CHAR},
+      </if>
+      <if test="remark != null">
+        "REMARK" = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <select id="getAllFlows" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    t."ID" , t."CLUE_ID" , t."STATE" , t."RECEIVE_ID" , t."REMARK" , t."CREATE_TIME",
+    s."USER_NAME" as "RECEIVE_NAME"
+    from "CLUE_FLOW" t left join "SYS_USER" s on t."RECEIVE_ID"=s."ID"
+    where t."CLUE_ID"=#{clueId,jdbcType=CHAR}
+    order by t."CREATE_TIME" asc
+  </select>
+
+  <select id="getReceiveId" resultType="java.lang.String">
+    select "RECEIVE_ID"
+    from (select "RECEIVE_ID" from "CLUE_FLOW"
+    where "CLUE_ID" = #{clueId,jdbcType=CHAR}
+    and "STATE" = #{state,jdbcType=INTEGER}
+    order by "CREATE_TIME" desc)
+    where ROWNUM &lt;=1
+  </select>
+</mapper>

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  REVEAL_FLOW
+ remarks     
+ author
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.RevealFlowDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="id !=null and id !=''">
+        and "ID" = #{id,jdbcType=CHAR}
+      </if>
+      <if test="revealId !=null and revealId !=''">
+        and "REVEAL_ID" = #{revealId,jdbcType=CHAR}
+      </if>
+      <if test="receiveId !=null and receiveId !=''">
+        and "RECEIVE_ID" = #{receiveId,jdbcType=CHAR}
+      </if>
+      <if test="receiveRoleId !=null and receiveRoleId !=''">
+        and "RECEIVE_ROLE_ID" = #{receiveRoleId,jdbcType=DECIMAL}
+      </if>
+      <if test="remark !=null and remark !=''">
+        and "REMARK" like ('%' || replace(replace(#{remark,jdbcType=VARCHAR},'%','\%'),'_','\_') ||
+        '%') escape '\'
+      </if>
+      <if test="state !=null and state !=''">
+        and "STATE" = #{state,jdbcType=DECIMAL}
+      </if>
+      <if test="createTime !=null and createTime !=''">
+        and "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.RevealFlowEntity">
+    <id column="ID" property="id" jdbcType="CHAR"/>
+    <result column="REVEAL_ID" property="revealId" jdbcType="CHAR"/>
+    <result column="RECEIVE_ID" property="receiveId" jdbcType="CHAR"/>
+    <result column="RECEIVE_ROLE_ID" property="receiveRoleId" jdbcType="DECIMAL"/>
+    <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+    <result column="STATE" property="state" jdbcType="DECIMAL"/>
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="RECEIVE_NAME" property="receiveName" jdbcType="VARCHAR"/>
+  </resultMap>
+
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "REVEAL_ID" , "RECEIVE_ID" , "RECEIVE_ROLE_ID" , "REMARK" , "STATE" , "CREATE_TIME"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "REVEAL_FLOW" where "ID" = #{id,jdbcType=CHAR} and ROWNUM &lt;= 1
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.RevealFlowEntity">
+    select count(1) from "REVEAL_FLOW"
+    <include refid="sql_where"/>
+  </select>
+
+  <!-- 根据条件查询，分页 -->
+  <select id="searchData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.RevealFlowEntity">
+    <choose>
+      <when test="orderSql !=''">
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from (select
+        <include refid="Base_Column_List"/>
+        from "REVEAL_FLOW"
+        <include refid="sql_where"/>
+        order by ${orderSql})
+        where ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </when>
+      <otherwise>
+        select
+        <include refid="Base_Column_List"/>
+        from (select ROWNUM as "ROW_ID",
+        <include refid="Base_Column_List"/>
+        from "REVEAL_FLOW"
+        <include refid="sql_where"/>
+        and ROWNUM &lt;= #{pager.end}) "PAGINATION"
+        where "PAGINATION"."ROW_ID" &gt;= #{pager.first}
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.RevealFlowEntity">
+    select
+    <include refid="Base_Column_List"/>
+    from "REVEAL_FLOW"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+  <!-- 单条删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from "REVEAL_FLOW" where "ID" = #{id,jdbcType=CHAR}
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "REVEAL_FLOW" where "ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 选择性删除，根据实际情况，对where条件进行删减 -->
+  <delete id="deleteSelective" parameterType="com.hengtianyi.dims.service.entity.RevealFlowEntity">
+    delete from "REVEAL_FLOW"
+    <include refid="sql_where"/>
+  </delete>
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.RevealFlowEntity">
+    insert into "REVEAL_FLOW" ("ID" , "REVEAL_ID" , "RECEIVE_ID" , "RECEIVE_ROLE_ID" , "REMARK" , "STATE" , "CREATE_TIME") values (#{id,jdbcType=CHAR} , #{revealId,jdbcType=CHAR} , #{receiveId,jdbcType=CHAR} , #{receiveRoleId,jdbcType=DECIMAL} , #{remark,jdbcType=VARCHAR} , #{state,jdbcType=DECIMAL} , #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!-- 选择性添加 -->
+  <insert id="insertSelective" parameterType="com.hengtianyi.dims.service.entity.RevealFlowEntity">
+    insert into "REVEAL_FLOW"
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        "ID",
+      </if>
+      <if test="revealId != null and revealId !=''">
+        "REVEAL_ID",
+      </if>
+      <if test="receiveId != null and receiveId !=''">
+        "RECEIVE_ID",
+      </if>
+      <if test="receiveRoleId != null or receiveRoleId == 0">
+        "RECEIVE_ROLE_ID",
+      </if>
+      <if test="remark != null and remark !=''">
+        "REMARK",
+      </if>
+      <if test="state != null or state == 0">
+        "STATE",
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME",
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !=''">
+        #{id,jdbcType=CHAR},
+      </if>
+      <if test="revealId != null and revealId !=''">
+        #{revealId,jdbcType=CHAR},
+      </if>
+      <if test="receiveId != null and receiveId !=''">
+        #{receiveId,jdbcType=CHAR},
+      </if>
+      <if test="receiveRoleId != null or receiveRoleId == 0">
+        #{receiveRoleId,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null and remark !=''">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null or state == 0">
+        #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+  <!-- 全部更新 -->
+  <update id="updateByPrimaryKey" parameterType="com.hengtianyi.dims.service.entity.RevealFlowEntity">
+    update "REVEAL_FLOW" set
+      "REVEAL_ID" = #{revealId,jdbcType=CHAR} , "RECEIVE_ID" = #{receiveId,jdbcType=CHAR} , "RECEIVE_ROLE_ID" = #{receiveRoleId,jdbcType=DECIMAL} , "REMARK" = #{remark,jdbcType=VARCHAR} , "STATE" = #{state,jdbcType=DECIMAL} , "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <!-- 选择性更新 -->
+  <update id="updateByPrimaryKeySelective"
+    parameterType="com.hengtianyi.dims.service.entity.RevealFlowEntity">
+    update "REVEAL_FLOW"
+    <set>
+      <if test="revealId != null">
+        "REVEAL_ID" = #{revealId,jdbcType=CHAR},
+      </if>
+      <if test="receiveId != null">
+        "RECEIVE_ID" = #{receiveId,jdbcType=CHAR},
+      </if>
+      <if test="receiveRoleId != null or receiveRoleId == 0">
+        "RECEIVE_ROLE_ID" = #{receiveRoleId,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null">
+        "REMARK" = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null or state == 0">
+        "STATE" = #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where "ID" = #{id,jdbcType=CHAR}
+  </update>
+
+  <select id="getAllFlows" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    t."RECEIVE_ID" , t."RECEIVE_ROLE_ID" , t."REMARK" , t."STATE" , t."CREATE_TIME",
+    s."USER_NAME" as "RECEIVE_NAME"
+    from "REVEAL_FLOW" t left join "SYS_USER" s on t."RECEIVE_ID"=s."ID"
+    where t."REVEAL_ID"=#{revealId,jdbcType=CHAR}
+    order by t."CREATE_TIME" asc
+  </select>
+
+</mapper>
