@@ -218,6 +218,7 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
       String[] turnToOtherTasks = new String[villageList.size()];
       String[] accepts = new String[villageList.size()];
       String[] completes = new String[villageList.size()];
+      String[] sums = new String[villageList.size()];
       for (int i = 0; i < villageList.size(); i++) {
         VillageEntity village = villageList.get(i);
         reportList = clueReportDao.getEchartsData(startTime, endTime, village.getAreaCode());
@@ -228,6 +229,7 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
         turnToOtherTasks[i] = dataMap.get("turnToOtherTask").toString();
         accepts[i] = dataMap.get("accept").toString();
         completes[i] = dataMap.get("complete").toString();
+        sums[i] = dataMap.get("sum").toString();
       }
       map.put("villageNames", villageNames);
       map.put("unAccepts", unAccepts);
@@ -235,6 +237,7 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
       map.put("turnToOtherTasks", turnToOtherTasks);
       map.put("accepts", accepts);
       map.put("completes", completes);
+      map.put("sums", sums);
       result.setSuccess(true);
       result.setResult(map);
     } catch (Exception e) {
@@ -251,6 +254,7 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
     Integer turnToOtherTask = 0;
     Integer accept = 0;
     Integer complete = 0;
+    Integer sum = 0;
 
     Integer total = reportList.size();
     for (ClueReportEntity reportEntity : reportList) {
@@ -265,6 +269,9 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
       } else if (reportEntity.getState() == 2) {
         complete += 1;
       }
+      if (reportEntity.getState() == 0 || reportEntity.getState() == 1 || reportEntity.getState() == 2 ||reportEntity.getState() == 3 ||reportEntity.getState() == 4) {
+        sum += 1;
+      }
     }
     map.put("total", total);
     map.put("unAccept", unAccept);
@@ -272,6 +279,7 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
     map.put("turnToOtherTask", turnToOtherTask);
     map.put("accept", accept);
     map.put("complete", complete);
+    map.put("sum", sum);
     return map;
   }
 

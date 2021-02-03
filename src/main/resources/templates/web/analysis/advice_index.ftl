@@ -53,7 +53,7 @@
 <#include "/common/scriptfile.ftl"/>
 <#include "/common/scriptfile_list.ftl"/>
 <script src="${global.staticPath!}static/plugins/laydate/laydate.js"></script>
-<script src="${global.staticPath!}static/plugins/echarts/echarts-all.js"></script>
+<script src="${global.staticPath!}static/plugins/echarts/echarts.min.js"></script>
 <script>
   laydate.render({
     "elem": "#timeRange",
@@ -94,6 +94,8 @@
 
   //饼状图
   function initPieData(pieData) {
+    var sum = pieData.wanggeyuan + pieData.lianluoyuan + pieData.xiangzhen
+    var sumStr = "总数：" + sum
     const piedom = document.getElementById("pieContainer");
     const pieChart = echarts.init(piedom);
     const pieOption = {
@@ -107,10 +109,21 @@
         data: ['网格员', '联络员', '乡镇管理员']
       },
       title: [{
-        text: '总量10',
+        text: pieData.sum,
         top: 'center',
         left: 'center'
       }],
+      //数值和百分比显示
+      itemStyle: {
+        normal: {
+          label: {
+            show: true,
+            formatter: '{b} : {c} ({d}%)'
+          },
+          labelLine: {show: true}
+        }
+      },
+      color: [ 'rgba(219,216,74,0.66)', 'rgba(31,189,194,0.66)', 'rgba(117,24,198,0.66)'],
       series: [
         {
           type: 'pie',
@@ -153,7 +166,28 @@
           type: 'category',
           data: barData.villageNames,
           axisLabel: {
-            rotate: 40
+            // rotate: 40,
+            // inside: true,
+            interval: 0,
+            formatter: function (value) {
+              var str = "";
+              var num = 1; //每行显示字数
+              var valLength = value.length; //该项x轴字数
+              var rowNum = Math.ceil(valLength / num); // 行数
+              if (rowNum > 1) {
+                for (var i = 0; i < rowNum; i++) {
+                  var temp = "";
+                  var start = i * num;
+                  var end = start + num;
+
+                  temp = value.substring(start, end) + "\n";
+                  str += temp;
+                }
+                return str;
+              } else {
+                return value;
+              }
+            }
           }
         }
       ],
@@ -166,19 +200,64 @@
         {
           name: '网格员',
           type: 'bar',
-          data: barData.wanggeyuans
+          stack: '数量',
+          data: barData.wanggeyuans,
+          emphasis: {
+            focus: 'series'
+          },
+          itemStyle: {
+            normal: {
+              color: 'rgba(219,216,74,0.66)',
+            }
+          }
         },
         {
           name: '联络员',
           type: 'bar',
-          stack: '广告',
-          data: barData.lianluoyuans
+          stack: '数量',
+          data: barData.lianluoyuans,
+          emphasis: {
+            focus: 'series'
+          },
+          itemStyle: {
+            normal: {
+              color: 'rgba(31,189,194,0.66)',
+            }
+          }
         },
         {
           name: '乡镇管理员',
           type: 'bar',
-          stack: '广告',
-          data: barData.xiangzhens
+          stack: '数量',
+          data: barData.xiangzhens,
+          emphasis: {
+            focus: 'series'
+          },
+          itemStyle: {
+            normal: {
+              color: 'rgba(117,24,198,0.66)'
+            }
+          }
+        },
+        {
+          name: '总数',
+          type: 'bar',
+          stack: '数量',
+          label: {
+            normal: {
+              offset: ['50', '80'],
+              show: true,
+              position: 'insideBottom',
+              formatter: '{c}',
+              textStyle: {color: '#000000'}
+            }
+          },
+          itemStyle: {
+            normal: {
+              color: 'rgba(128,128,128,0)'
+            }
+          },
+          data: barData.sums
         }
       ]
     };

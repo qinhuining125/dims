@@ -136,6 +136,7 @@ public class IncorruptAdviceServiceImpl extends
       String[] wanggeyuans = new String[villageList.size()];
       String[] lianluoyuans = new String[villageList.size()];
       String[] xiangzhens = new String[villageList.size()];
+      String[] sums = new String[villageList.size()];
       for (int i = 0; i < villageList.size(); i++) {
         VillageEntity village = villageList.get(i);
         adviceEntityList = incorruptAdviceDao
@@ -145,11 +146,13 @@ public class IncorruptAdviceServiceImpl extends
         wanggeyuans[i] = dataMap.get("wanggeyuan").toString();
         lianluoyuans[i] = dataMap.get("lianluoyuan").toString();
         xiangzhens[i] = dataMap.get("xiangzhen").toString();
+        sums[i] = dataMap.get("sum").toString();
       }
       map.put("villageNames", villageNames);
       map.put("wanggeyuans", wanggeyuans);
       map.put("lianluoyuans", lianluoyuans);
       map.put("xiangzhens", xiangzhens);
+      map.put("sums", sums);
       result.setSuccess(true);
       result.setResult(map);
     } catch (Exception e) {
@@ -164,6 +167,7 @@ public class IncorruptAdviceServiceImpl extends
     Integer wanggeyuan = 0;
     Integer lianluoyuan = 0;
     Integer xiangzhen = 0;
+    Integer sum = 0;
     for (IncorruptAdviceEntity entity : list) {
       if (entity.getRoleId() == 1001) {
         wanggeyuan += 1;
@@ -172,10 +176,14 @@ public class IncorruptAdviceServiceImpl extends
       } else if (entity.getRoleId() == 1003) {
         xiangzhen += 1;
       }
+      if (entity.getRoleId() == 1001||entity.getRoleId() == 1002||entity.getRoleId() == 1003) {
+        sum += 1;
+      }
     }
     map.put("wanggeyuan", wanggeyuan);
     map.put("lianluoyuan", lianluoyuan);
     map.put("xiangzhen", xiangzhen);
+    map.put("sum", sum);
     return map;
   }
 

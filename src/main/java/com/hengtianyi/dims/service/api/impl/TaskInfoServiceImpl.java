@@ -231,6 +231,7 @@ public class TaskInfoServiceImpl extends AbstractGenericServiceImpl<TaskInfoEnti
             String[] unAccepts = new String[townList.size()];
             String[] accepts = new String[townList.size()];
             String[] completes = new String[townList.size()];
+            String[] sums = new String[townList.size()];
             for (int i = 0; i < townList.size(); i++) {
                 entityList = taskInfoDao
                         .getEchartsData(startTime, endTime, townList.get(i).getAreaCode());
@@ -239,11 +240,13 @@ public class TaskInfoServiceImpl extends AbstractGenericServiceImpl<TaskInfoEnti
                 unAccepts[i] = dataMap.get("unAccept").toString();
                 accepts[i] = dataMap.get("accept").toString();
                 completes[i] = dataMap.get("complete").toString();
+                sums[i] = dataMap.get("sum").toString();
             }
             map.put("townNames", townNames);
             map.put("unAccepts", unAccepts);
             map.put("accepts", accepts);
             map.put("completes", completes);
+            map.put("sums", sums);
             result.setSuccess(true);
             result.setResult(map);
         } catch (Exception e) {
@@ -258,6 +261,7 @@ public class TaskInfoServiceImpl extends AbstractGenericServiceImpl<TaskInfoEnti
         Integer unAccept = 0;
         Integer accept = 0;
         Integer complete = 0;
+        Integer sum = 0;
         for (TaskInfoEntity entity : list) {
             if (entity.getState() == null) {
                 continue;
@@ -269,10 +273,14 @@ public class TaskInfoServiceImpl extends AbstractGenericServiceImpl<TaskInfoEnti
             } else if (entity.getState() == 2) {
                 complete += 1;
             }
+            if (entity.getState() == 0 || entity.getState() == 3||entity.getState() == 1||entity.getState() == 2) {
+                sum += 1;
+            }
         }
         map.put("unAccept", unAccept);
         map.put("accept", accept);
         map.put("complete", complete);
+        map.put("sum", sum);
         return map;
     }
 

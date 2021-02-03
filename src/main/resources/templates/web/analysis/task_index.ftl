@@ -53,7 +53,7 @@
 <#include "/common/scriptfile.ftl"/>
 <#include "/common/scriptfile_list.ftl"/>
 <script src="${global.staticPath!}static/plugins/laydate/laydate.js"></script>
-<script src="${global.staticPath!}static/plugins/echarts/echarts-all.js"></script>
+<script src="${global.staticPath!}static/plugins/echarts/echarts.min.js"></script>
 <script>
   laydate.render({
     "elem": "#timeRange",
@@ -94,6 +94,8 @@
 
   //饼状图
   function initPieData(pieData) {
+    var sum = pieData.unAccept + pieData.accept + pieData.complete
+    var sumStr = "总数：" + sum
     const piedom = document.getElementById("pieContainer");
     const pieChart = echarts.init(piedom);
     const pieOption = {
@@ -107,12 +109,27 @@
         data: ['未受理', '已受理', '已办结']
       },
       title: [{
-        text: '总量10',
+        text: sumStr,
         top: 'center',
         left: 'center'
       }],
+      color: ['rgba(212,90,42,0.64)', 'rgba(49,203,92,0.66)', 'rgba(31,39,194,0.66)'],
       series: [
         {
+          //数值和百分比显示
+          itemStyle: {
+            normal: {
+              label: {
+                show: true,
+                formatter: '{b} : {c} ({d}%)'
+              },
+              labelLine: {show: true}
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          name: '数量和占比',
           type: 'pie',
           radius: ['50%', '70%'],
           data: [
@@ -153,9 +170,28 @@
           type: 'category',
           data: barData.townNames,
           axisLabel: {
+            // rotate: 40,
+            // inside: true,
             interval: 0,
-            inside: true,
-            rotate: 30
+            formatter: function (value) {
+              var str = "";
+              var num = 1; //每行显示字数
+              var valLength = value.length; //该项x轴字数
+              var rowNum = Math.ceil(valLength / num); // 行数
+              if (rowNum > 1) {
+                for (var i = 0; i < rowNum; i++) {
+                  var temp = "";
+                  var start = i * num;
+                  var end = start + num;
+
+                  temp = value.substring(start, end) + "\n";
+                  str += temp;
+                }
+                return str;
+              } else {
+                return value;
+              }
+            }
           }
         }
       ],
@@ -169,19 +205,64 @@
           name: '未受理',
           type: 'bar',
           stack: '数量',
-          data: barData.unAccepts
+          data: barData.unAccepts,
+          emphasis: {
+            focus: 'series'
+          },
+          itemStyle: {
+            normal: {
+              color:  'rgba(212,90,42,0.64)',
+            }
+          }
         },
         {
           name: '已受理',
           type: 'bar',
           stack: '数量',
-          data: barData.accepts
+          data: barData.accepts,
+          emphasis: {
+            focus: 'series'
+          },
+          itemStyle: {
+            normal: {
+              color:  'rgba(49,203,92,0.66)',
+            }
+          }
         },
         {
           name: '已办结',
           type: 'bar',
           stack: '数量',
-          data: barData.completes
+          data: barData.completes,
+          emphasis: {
+            focus: 'series'
+          },
+          itemStyle: {
+            normal: {
+              color: 'rgba(31,39,194,0.66)'
+            }
+          }
+        },
+        //series中push合计的数据
+        {
+          name: '总数',
+          type: 'bar',
+          stack: '数量',
+          label: {
+            normal: {
+              offset: ['50', '80'],
+              show: true,
+              position: 'insideBottom',
+              formatter: '{c}',
+              textStyle: {color: '#000000'}
+            }
+          },
+          itemStyle: {
+            normal: {
+              color: 'rgba(128,128,128,0)'
+            }
+          },
+          data: barData.sums
         }
       ]
     };
