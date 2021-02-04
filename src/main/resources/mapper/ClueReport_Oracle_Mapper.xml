@@ -240,6 +240,7 @@
     <include refid="Base_Column_List"/>
     from (select t.* from "CLUE_REPORT" t
     <include refid="page_where"/>
+
     order by t.create_time desc)
     where ROWNUM &lt;= #{dto.end}) p
     left join "SYS_USER" s on p."USER_ID"=s."ID"
@@ -305,6 +306,9 @@
       <if test="dto.reportRoleId !=null and dto.reportRoleId !=''">
         and t."REPORT_ROLE_ID" = #{dto.reportRoleId,jdbcType=DECIMAL}
       </if>
+      <if test="dto.reportIds !=null and dto.reportIds !=''">
+        and "REPORT_IDS" like concat(concat('%', #{dto.reportIds}), '%')
+      </if>
     </where>
   </sql>
 
@@ -355,14 +359,8 @@
         and "CREATE_TIME" &lt; sysdate
       </otherwise>
     </choose>
-    <if test="reportRoleId!=null and reportRoleId!=''">
-      and "REPORT_ROLE_ID" = #{reportRoleId,jdbcType=VARCHAR}
-    </if>
-    and "REPORT_IDS" in (
-    select ID from "REPORT_TYPE" where "STATE" = #{reportState,jdbcType=INTEGER}
-    )
-    <if test="reportIds!=null and reportIds!=''">
-      and "REPORT_IDS" like concat(concat('%', #{reportIds}), '%')
+    <if test="roleId!=null and roleId!=''">
+      and "REPORT_ROLE_ID" = #{roleId,jdbcType=VARCHAR}
     </if>
     <if test="report0Wook!=null and report0Wook!=''">
       and "REPORT_IDS" like concat(concat('%', #{report0Wook}), '%')

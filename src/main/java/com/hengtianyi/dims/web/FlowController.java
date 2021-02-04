@@ -54,8 +54,12 @@ public class FlowController {
 
     @GetMapping(value = "a/analysis/clue.html", produces = BaseConstant.HTML)
     public String analysisClue(Model model) {
+
+        Integer roleId1 = 1001;//        网格员
+        Integer roleId2 = 1002;//联络员
         model.addAttribute("areaList", townshipService.areaList());
-        model.addAttribute("reportTypeList", reportTypeService.getListAll());
+        model.addAttribute("reportTypeList1", reportTypeService.getListAll(roleId1));
+        model.addAttribute("reportTypeList2", reportTypeService.getListAll(roleId2));
         return "web/analysis/clue_index";
     }
 
@@ -66,10 +70,11 @@ public class FlowController {
                            @RequestParam(required = false) String areaCode,
                            @RequestParam(required = false) String reportRoleId,
                            @RequestParam(required = false) String reportState,
-                           @RequestParam(required = false) String reportIds) {
+                           @RequestParam(required = false) String reportIds1,
+                           @RequestParam(required = false) String reportIds2) {
         String start = startTime != null ? TimeUtil.format(startTime, BaseConstant.DATE_FORMAT2) : "";
         String end = endTime != null ? TimeUtil.format(endTime, BaseConstant.DATE_FORMAT2) : "";
-        return clueReportService.echartsData(start, end, areaCode,reportRoleId,reportState,reportIds);
+        return clueReportService.echartsData(start, end, areaCode,reportRoleId,reportState,reportIds1,reportIds2);
     }
 
     @GetMapping(value = "a/analysis/report0.html", produces = BaseConstant.HTML)

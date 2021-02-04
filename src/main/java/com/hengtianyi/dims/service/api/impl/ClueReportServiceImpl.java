@@ -188,12 +188,21 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
      * @return list
      */
     @Override
-    public String echartsData(String startTime, String endTime, String areaCode, String reportRoleId, String reportState, String reportIds) {
+    public String echartsData(String startTime, String endTime, String areaCode, String reportRoleId, String reportState, String reportIds1, String reportIds2) {
         ServiceResult<Object> result = new ServiceResult();
         try {
-
+            String reportIds="";
+            if (reportIds1.length()>0){
+                reportIds=reportIds1;
+                reportRoleId="1001";
+            }
+            if (reportIds2.length()>0){
+                reportIds=reportIds2;
+                reportRoleId="1002";
+            }
             List<ClueReportEntity> reportList = clueReportDao
                     .getEchartsData(startTime, endTime, areaCode, reportRoleId, reportState, reportIds);
+
             Map<String, Object> map = count(reportList);
             List<String> wgynrsList = reportTypeDao.contentByRole(1001);
             List<String> llynrsList = reportTypeDao.contentByRole(1002);
@@ -290,19 +299,21 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
 
         Integer total = reportList.size();
         for (ClueReportEntity reportEntity : reportList) {
-            if (reportEntity.getState() == 0) {
-                unAccept += 1;
-            } else if (reportEntity.getState() == 3) {
-                knowTask += 1;
-            } else if (reportEntity.getState() == 4) {
-                turnToOtherTask += 1;
-            } else if (reportEntity.getState() == 1) {
-                accept += 1;
-            } else if (reportEntity.getState() == 2) {
-                complete += 1;
-            }
-            if (reportEntity.getState() == 0 || reportEntity.getState() == 1 || reportEntity.getState() == 2 || reportEntity.getState() == 3 || reportEntity.getState() == 4) {
-                sum += 1;
+            if (reportEntity.getReportIds().indexOf("11")==-1){
+                if (reportEntity.getState() == 0) {
+                    unAccept += 1;
+                } else if (reportEntity.getState() == 3) {
+                    knowTask += 1;
+                } else if (reportEntity.getState() == 4) {
+                    turnToOtherTask += 1;
+                } else if (reportEntity.getState() == 1) {
+                    accept += 1;
+                } else if (reportEntity.getState() == 2) {
+                    complete += 1;
+                }
+                if (reportEntity.getState() == 0 || reportEntity.getState() == 1 || reportEntity.getState() == 2 || reportEntity.getState() == 3 || reportEntity.getState() == 4) {
+                    sum += 1;
+                }
             }
         }
         map.put("total", total);
@@ -319,10 +330,11 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
     public String echartsReport0Data(String startTime, String endTime, String areaCode, String reportRoleId, String reportState, String reportIds) {
         ServiceResult<Object> result = new ServiceResult();
         try {
-            String report0Wook="16";
+            String report0Wook="11";
+            String roleId="1002";
             List<ClueReportEntity> reportList = clueReportDao
-                    .getEchartsReport0Data(startTime, endTime, areaCode, reportRoleId, reportState, reportIds,report0Wook);
-            Map<String, Object> map = count(reportList);
+                    .getEchartsReport0Data(startTime, endTime, areaCode, roleId,report0Wook);
+            Map<String, Object> map = countReport0(reportList);
 
             List<VillageEntity> villageList = villageDao.areaList(areaCode);
             String[] villageNames = new String[villageList.size()];
@@ -334,8 +346,8 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
             String[] sums = new String[villageList.size()];
             for (int i = 0; i < villageList.size(); i++) {
                 VillageEntity village = villageList.get(i);
-                reportList = clueReportDao.getEchartsReport0Data(startTime, endTime, village.getAreaCode(), reportRoleId, reportState, reportIds,report0Wook);
-                Map<String, Object> dataMap = count(reportList);
+                reportList = clueReportDao.getEchartsReport0Data(startTime, endTime, village.getAreaCode(), roleId,report0Wook);
+                Map<String, Object> dataMap = countReport0(reportList);
                 villageNames[i] = village.getAreaName();
                 unAccepts[i] = dataMap.get("unAccept").toString();
                 knowTasks[i] = dataMap.get("knowTask").toString();

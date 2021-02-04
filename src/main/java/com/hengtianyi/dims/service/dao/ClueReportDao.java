@@ -58,8 +58,6 @@ public interface ClueReportDao extends AbstractGenericDao<ClueReportEntity, Stri
     List<ClueReportEntity> getEchartsReport0Data(@Param("startTime") String startTime,
                                                  @Param("endTime") String endTime,
                                                  @Param("areaCode") String areaCode,
-                                                 @Param("reportRoleId") String reportRoleId,
-                                                 @Param("reportState") String reportState,
-                                                 @Param("reportIds") String reportIds,
+                                                 @Param("roleId") String roleId,
                                                  @Param("report0Wook") String report0Wook);
 }

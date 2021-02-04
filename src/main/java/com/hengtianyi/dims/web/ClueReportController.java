@@ -88,6 +88,10 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
     SysUserEntity userEntity = WebUtil.getUser(request);
     Integer roleId = userEntity.getRoleId();
     model.addAttribute("roleId", roleId);
+    Integer roleId1 = 1001;//        网格员
+    Integer roleId2 = 1002;//联络员
+    model.addAttribute("reportTypeList1", reportTypeService.getListAll(roleId1));
+    model.addAttribute("reportTypeList2", reportTypeService.getListAll(roleId2));
     return "web/clueReport/clueReport_index";
   }
 
@@ -149,6 +153,14 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
       queryDto.setUserId(userEntity.getId());
     }
     if (dto != null) {
+      if (dto.getReportIds1()!=null&&dto.getReportIds1().length()>0){
+        dto.setReportIds(dto.getReportIds1());
+        dto.setReportRoleId(1001);
+      }
+      if (dto.getReportIds2()!=null&&dto.getReportIds2().length()>0){
+        dto.setReportIds(dto.getReportIds2());
+        dto.setReportRoleId(1002);
+      }
       if (dto.getState() != null) {
         queryDto.setState(dto.getState().intValue());
       }
@@ -160,6 +172,7 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
       }
       queryDto.setAreaCode(dto.getAreaCode());
       queryDto.setReportRoleId(dto.getReportRoleId());
+      queryDto.setReportIds(dto.getReportIds());
     }
     queryDto.setCurrentPage(pageDto.getCurrent());
     queryDto.setFirst((pageDto.getCurrent() - 1) * FrameConstant.PAGE_SIZE);

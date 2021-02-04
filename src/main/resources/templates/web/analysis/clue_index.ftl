@@ -66,12 +66,25 @@
             </div>
             <div class="col-xs-6 col-sm-4 col-lg-3">
               <div class="form-group">
-                <label class="col-sm-4 control-label">报送类型</label>
+                <label class="col-sm-4 control-label">网格员报送类型</label>
                 <div class="col-sm-7">
-                  <select name="reportIds" id="areaCode" class="form-control">
+                  <select name="reportIds1" id="reportIds1" class="form-control">
                     <option value="">全部</option>
-                    <#list reportTypeList as obj>
-                      <option value="${(obj.id)!}">${(obj.content)!}</option>
+                    <#list reportTypeList1 as obj>
+                      <option value="${(obj.sortNo)!}">${(obj.content)!}</option>
+                    </#list>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-6 col-sm-4 col-lg-3">
+              <div class="form-group">
+                <label class="col-sm-4 control-label">联络员报送类型</label>
+                <div class="col-sm-7">
+                  <select name="reportIds2" id="reportIds2" class="form-control">
+                    <option value="">全部</option>
+                    <#list reportTypeList2 as obj>
+                      <option value="${(obj.sortNo)!}">${(obj.content)!}</option>
                     </#list>
                   </select>
                 </div>

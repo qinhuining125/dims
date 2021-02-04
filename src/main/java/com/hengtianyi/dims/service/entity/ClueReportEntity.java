@@ -86,6 +86,31 @@ public class ClueReportEntity extends BaseEntity {
 
   private String reportUserAreaName;
 
+  /**
+   * 网格员上报类型ids
+   */
+  private String reportIds1;
+  /**
+   * 联络员上报类型ids
+   */
+  private String reportIds2;
+
+  public String getReportIds1() {
+    return reportIds1;
+  }
+
+  public void setReportIds1(String reportIds1) {
+    this.reportIds1 = reportIds1;
+  }
+
+  public String getReportIds2() {
+    return reportIds2;
+  }
+
+  public void setReportIds2(String reportIds2) {
+    this.reportIds2 = reportIds2;
+  }
+
   public String getReportUserAreaName() {
     return reportUserAreaName;
   }

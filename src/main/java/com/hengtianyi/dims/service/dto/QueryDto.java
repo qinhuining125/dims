@@ -59,6 +59,18 @@ public class QueryDto extends BaseBean {
    * 上报类型角色Id
    */
   private Integer reportRoleId;
+  /**
+   * 上报类型ids
+   */
+  private String reportIds;
+
+  public String getReportIds() {
+    return reportIds;
+  }
+
+  public void setReportIds(String reportIds) {
+    this.reportIds = reportIds;
+  }
 
   public int getFirst() {
     return first;

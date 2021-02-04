@@ -100,8 +100,7 @@ public class ReportTypeServiceImpl extends AbstractGenericServiceImpl<ReportType
   }
 
   @Override
-  public List<ReportTypeEntity> getListAll() {
-    Integer roleId=null;
+  public List<ReportTypeEntity> getListAll(Integer roleId) {
     return reportTypeDao.getListAll(roleId);
   }
 }

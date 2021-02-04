@@ -40,30 +40,6 @@
                 </div>
               </div>
             </div>
-            <div class="col-xs-6 col-sm-4 col-lg-3">
-              <div class="form-group">
-                <label class="col-sm-4 control-label">角色</label>
-                <div class="col-sm-7">
-                  <select name="reportRoleId" class="form-control">
-                    <option value="">全部</option>
-                    <option value="1001">网格员</option>
-                    <option value="1002">联络员</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="col-xs-6 col-sm-4 col-lg-3">
-              <div class="form-group">
-                <label class="col-sm-4 control-label">报送类型状态</label>
-                <div class="col-sm-7">
-                  <select name="reportState" class="form-control">
-                    <option value="">全部</option>
-                    <option value="有效">有效</option>
-                    <option value="无效">无效</option>
-                  </select>
-                </div>
-              </div>
-            </div>
           </div>
           <div class="text-center">
             <button id="btn-cx" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;查询
