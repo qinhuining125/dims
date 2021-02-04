@@ -5,7 +5,6 @@ import com.hengtianyi.common.core.util.StringUtil;
 import com.hengtianyi.dims.service.api.ReportTypeService;
 import com.hengtianyi.dims.service.dao.ReportTypeDao;
 import com.hengtianyi.dims.service.dto.KeyValueDto;
-import com.hengtianyi.dims.service.entity.ClueReportEntity;
 import com.hengtianyi.dims.service.entity.ReportTypeEntity;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,5 +97,11 @@ public class ReportTypeServiceImpl extends AbstractGenericServiceImpl<ReportType
       dtoList.add(keyValueDto);
     }
     return dtoList;
+  }
+
+  @Override
+  public List<ReportTypeEntity> getListAll() {
+    Integer roleId=null;
+    return reportTypeDao.getListAll(roleId);
   }
 }

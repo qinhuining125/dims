@@ -63,6 +63,7 @@
           <span class="fa arrow"></span></a>
         <ul class="nav nav-second-level">
           <li><a class="J_menuItem" href="/a/analysis/clue.html">上报统计</a></li>
+          <li><a class="J_menuItem" href="/a/analysis/report0.html">每周零报告统计</a></li>
           <li><a class="J_menuItem" href="/a/analysis/advice.html">建议统计</a></li>
           <li><a class="J_menuItem" href="/a/analysis/task.html">任务统计</a></li>
           <li><a class="J_menuItem" href="/a/analysis/report.html">举报统计</a></li>

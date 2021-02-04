@@ -29,6 +29,9 @@
       <if test="createTime !=null and createTime !=''">
         and "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
       </if>
+      <if test="state !=null and state !=''">
+        and "STATE" = #{state,jdbcType=VARCHAR}
+      </if>
     </where>
   </sql>
 
@@ -39,11 +42,12 @@
     <result column="CONTENT" property="content" jdbcType="VARCHAR"/>
     <result column="SORT_NO" property="sortNo" jdbcType="INTEGER"/>
     <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="STATE" property="state" jdbcType="VARCHAR"/>
   </resultMap>
 
   <!-- 字段集合 -->
   <sql id="Base_Column_List">
-      "ID" , "ROLE_ID" , "CONTENT" , "SORT_NO" , "CREATE_TIME"
+      "ID" , "ROLE_ID" , "CONTENT" , "SORT_NO" , "CREATE_TIME", "STATE"
   </sql>
 
   <!-- 根据主键查询 -->
@@ -101,7 +105,14 @@
       order by ${orderSql}
     </if>
   </select>
-
+  <!-- 查询，所有 -->
+  <select id="getListAll" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from "REPORT_TYPE"
+    where 1=1
+    <if test="roleId !=null and roleId !=''">
+      and "ROLE_ID" = #{roleId,jdbcType=INTEGER}
+    </if>
+  </select>
   <!-- 单条删除 -->
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from "REPORT_TYPE" where "ID" = #{id,jdbcType=VARCHAR}
@@ -123,7 +134,7 @@
 
   <!-- 添加 -->
   <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.ReportTypeEntity">
-    insert into "REPORT_TYPE" ("ID" , "ROLE_ID" , "CONTENT" , "SORT_NO" , "CREATE_TIME") values (#{id,jdbcType=INTEGER} , #{roleId,jdbcType=INTEGER} , #{content,jdbcType=VARCHAR} , #{sortNo,jdbcType=INTEGER} , #{createTime,jdbcType=TIMESTAMP})
+    insert into "REPORT_TYPE" ("ID" , "ROLE_ID" , "CONTENT" , "SORT_NO" , "CREATE_TIME","STATE") values (#{id,jdbcType=INTEGER} , #{roleId,jdbcType=INTEGER} , #{content,jdbcType=VARCHAR} , #{sortNo,jdbcType=INTEGER} , #{createTime,jdbcType=TIMESTAMP}, #{state,jdbcType=VARCHAR})
   </insert>
 
   <!-- 选择性添加 -->
@@ -170,7 +181,7 @@
   <update id="updateByPrimaryKey"
     parameterType="com.hengtianyi.dims.service.entity.ReportTypeEntity">
     update "REPORT_TYPE" set
-      "ROLE_ID" = #{roleId,jdbcType=INTEGER} , "CONTENT" = #{content,jdbcType=VARCHAR} , "SORT_NO" = #{sortNo,jdbcType=INTEGER} , "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+      "ROLE_ID" = #{roleId,jdbcType=INTEGER} , "CONTENT" = #{content,jdbcType=VARCHAR} , "SORT_NO" = #{sortNo,jdbcType=INTEGER} , "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP} , "STATE" = #{state,jdbcType=VARCHAR}
     where "ID" = #{id,jdbcType=INTEGER}
   </update>
 
@@ -190,6 +201,9 @@
       </if>
       <if test="createTime != null">
         "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        "STATE" = #{state,jdbcType=VARCHAR},
       </if>
     </set>
     where "ID" = #{id,jdbcType=INTEGER}

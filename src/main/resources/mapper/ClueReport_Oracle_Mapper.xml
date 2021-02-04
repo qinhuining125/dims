@@ -322,6 +322,51 @@
         and "CREATE_TIME" &lt; sysdate
       </otherwise>
     </choose>
+    <if test="reportRoleId!=null and reportRoleId!=''">
+      and "REPORT_ROLE_ID" = #{reportRoleId,jdbcType=VARCHAR}
+    </if>
+    <if test="reportState!=null and reportState!=''">
+      and "REPORT_IDS" in (
+      select ID from REPORT_TYPE where "STATE" = #{reportState,jdbcType=VARCHAR}
+      )
+    </if>
+    <if test="reportIds!=null and reportIds!=''">
+      and "REPORT_IDS" like concat(concat('%', #{reportIds}), '%')
+    </if>
+    <if test="areaCode!=null and areaCode!=''">
+      and "USER_ID" in (
+      select a.id from sys_user a where a.area_code like (#{areaCode,jdbcType=VARCHAR} ||'%')
+      and a.role_id &lt;1003
+      )
+    </if>
+  </select>
+
+  <select id="getEchartsReport0Data" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from "CLUE_REPORT"
+    where  1=1
+    <choose>
+      <when test="endTime!=null and endTime!=''">
+        and "CREATE_TIME" >= to_date(#{startTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+        and "CREATE_TIME" &lt; to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+      </when>
+      <otherwise>
+        and "CREATE_TIME" &lt; sysdate
+      </otherwise>
+    </choose>
+    <if test="reportRoleId!=null and reportRoleId!=''">
+      and "REPORT_ROLE_ID" = #{reportRoleId,jdbcType=VARCHAR}
+    </if>
+    and "REPORT_IDS" in (
+    select ID from "REPORT_TYPE" where "STATE" = #{reportState,jdbcType=INTEGER}
+    )
+    <if test="reportIds!=null and reportIds!=''">
+      and "REPORT_IDS" like concat(concat('%', #{reportIds}), '%')
+    </if>
+    <if test="report0Wook!=null and report0Wook!=''">
+      and "REPORT_IDS" like concat(concat('%', #{report0Wook}), '%')
+    </if>
     <if test="areaCode!=null and areaCode!=''">
       and "USER_ID" in (
       select a.id from sys_user a where a.area_code like (#{areaCode,jdbcType=VARCHAR} ||'%')

@@ -41,6 +41,16 @@
                      value="${(entity.sortNo)!}"/><span class="help-block m-b-none"></span>
             </div>
           </div>
+          <div class="form-group">
+            <label class="col-xs-3 control-label"><span class="text-danger">*</span>状态：</label>
+            <div class="col-xs-9">
+              <select name="state" class="form-control">
+                <option value="">全部</option>
+                <option value="有效">有效</option>
+                <option value="无效">无效</option>
+              </select>
+            </div>
+          </div>
         </div>
       </form>
     </div>

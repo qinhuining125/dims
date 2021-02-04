@@ -64,19 +64,6 @@
                 </div>
               </div>
             </div>
-            <div class="col-xs-6 col-sm-4 col-lg-3">
-              <div class="form-group">
-                <label class="col-sm-4 control-label">报送类型</label>
-                <div class="col-sm-7">
-                  <select name="reportIds" id="areaCode" class="form-control">
-                    <option value="">全部</option>
-                    <#list reportTypeList as obj>
-                      <option value="${(obj.id)!}">${(obj.content)!}</option>
-                    </#list>
-                  </select>
-                </div>
-              </div>
-            </div>
           </div>
           <div class="text-center">
             <button id="btn-cx" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;查询
@@ -88,8 +75,6 @@
     <div>
       <div style="width: 45%;height: 500px;float: left" id="pieContainer"></div>
       <div style="width: 45%;height: 500px;float: left" id="barContainer"></div>
-      <div style="width: 45%;height: 500px;float: left" id="llyContainer"></div>
-      <div style="width: 45%;height: 500px;float: left" id="wgyContainer"></div>
     </div>
   </div>
 </div>
@@ -117,7 +102,7 @@
     $("#btn-cx").on("click", function () {
       const data = $(this).parent().parent().serialize();
       $.ajax({
-        "url": "a/analysis/clueData.json",
+        "url": "a/analysis/report0Data.json",
         "type": "POST",
         "data": data,
         "dataType": "json",
@@ -343,13 +328,6 @@
 
   //联络员
   function initLlyBarData(barData) {
-    // barData
-
-    var llynrs=[];
-    for (i=0;i<barData.llynrs.length;i++){
-      llynrs[i] = "类型" +( i + 1);
-    }
-    // console.log(llynrs)
     const dom = document.getElementById("llyContainer");
     const myChart = echarts.init(dom);
     const option = {
@@ -379,7 +357,7 @@
       },
       yAxis: {
         type: 'category',
-        data: llynrs
+        data: ["类型1", "类型2", "类型3", "类型4", "类型5", "类型6", "类型7", "类型8", "类型9", "类型10", "类型11"]
       },
       series: [
         {
@@ -401,10 +379,7 @@
 
   //网格员
   function initWgyBarData(barData) {
-    var wgynrs=[];
-    for (i=0;i<barData.wgynrs.length;i++){
-      wgynrs[i] = "类型" +( i + 1);
-    }
+console.log(barData)
     const dom = document.getElementById("wgyContainer");
     const myChart = echarts.init(dom);
     const option = {
@@ -434,7 +409,7 @@
       },
       yAxis: {
         type: 'category',
-        data: wgynrs
+        data: ["类型1", "类型2", "类型3", "类型4", "类型5", "类型6", "类型7"]
       },
       series: [
         {

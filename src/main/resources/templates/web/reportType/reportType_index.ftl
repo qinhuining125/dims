@@ -24,6 +24,18 @@
                 </div>
               </div>
             </div>
+            <div class="col-xs-6 col-sm-4 col-lg-3">
+              <div class="form-group">
+                <label class="col-sm-4 control-label">类型状态</label>
+                <div class="col-sm-7">
+                  <select name="state" class="form-control">
+                    <option value="">全部</option>
+                    <option value="有效">有效</option>
+                    <option value="无效">无效</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="text-center">
             <button id="btn-search-reportType" class="btn btn-primary"><i class="fa fa-search"></i> 查询
@@ -61,6 +73,9 @@
           </th>
           <th data-column-id="sortNo" data-order="desc" data-visible="true" data-sortable="true">
             编号
+          </th>
+          <th data-column-id="state" data-order="desc" data-visible="true" data-sortable="true">
+            状态
           </th>
           <th data-column-id="createTime" data-order="desc" data-visible="true"
               data-sortable="true" data-formatter="fun_date">时间

@@ -29,4 +29,7 @@ public interface ReportTypeService extends AbstractGenericService<ReportTypeEnti
    * @return list
    */
   List<KeyValueDto> contents(Integer roleId, String reportIds);
+
+
+  List<ReportTypeEntity>  getListAll();
 }

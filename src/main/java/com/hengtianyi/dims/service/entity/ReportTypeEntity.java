@@ -26,8 +26,20 @@ public class ReportTypeEntity extends BaseEntity {
    * 内容
    */
   private String content;
+  /**
+   * 状态
+   */
+  private String state;
 
-  /** 
+  public String getState() {
+    return state;
+  }
+
+  public void setState(String state) {
+    this.state = state;
+  }
+
+  /**
    * 顺序
    */
   private Integer sortNo;

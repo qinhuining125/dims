@@ -35,6 +35,7 @@ public class ReportTypeApiController {
     ServiceResult<Object> result = new ServiceResult<>();
     result.setSuccess(true);
     ReportTypeEntity entity = new ReportTypeEntity();
+    entity.setState("有效");
     entity.setRoleId(roldId);
     List<ReportTypeEntity> list = reportTypeService
         .searchAllData(entity, Collections.singletonMap("sort_no", "asc"));

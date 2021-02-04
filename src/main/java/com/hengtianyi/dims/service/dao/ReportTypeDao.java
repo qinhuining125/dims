@@ -39,4 +39,6 @@ public interface ReportTypeDao extends AbstractGenericDao<ReportTypeEntity, Stri
    * @return content
    */
   String contentByRoleSortNo(@Param("roleId") Integer roleId, @Param("sortNo") Integer sortNo);
+
+  List<ReportTypeEntity> getListAll(@Param("roleId") Integer roleId);
 }
