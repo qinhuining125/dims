@@ -121,6 +121,12 @@
       </div>
     </div>
     <div class="form-group">
+      <label class="col-xs-4 control-label">状态：</label>
+      <div class="col-xs-8">
+        <div class="form-control-static">{{state}}</div>
+      </div>
+    </div>
+    <div class="form-group">
       <label class="col-xs-4 control-label">顺序：</label>
       <div class="col-xs-8">
         <div class="form-control-static">{{sortNo}}</div>
