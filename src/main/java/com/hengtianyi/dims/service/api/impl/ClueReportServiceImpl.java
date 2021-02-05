@@ -148,7 +148,8 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
                 entity.setReportUserAreaName(town.getAreaName());
                 List<KeyValueDto> dtoList = new ArrayList<>();
                 KeyValueDto keyValueDto = null;
-                for (String key : entity.getReportIds().split(StringUtil.COMMA)) {
+                String[] reportIds=entity.getReportIds().split(StringUtil.COMMA);
+                for (String key : reportIds) {
                     keyValueDto = new KeyValueDto();
                     keyValueDto.setKey(key);
                     keyValueDto.setValue(
@@ -192,16 +193,40 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
         ServiceResult<Object> result = new ServiceResult();
         try {
             String reportIds="";
+            String reportContents="";
+            String reportContents2="";
+            List<String> wgyContentsList = new ArrayList<>();
+            List<String> llyContentsList = new ArrayList<>();
+            if(reportState!=null && !reportState.equals("") && !reportState.equals("全部")){
+                List<ReportTypeEntity> listByStateWgy = reportTypeDao.getListByStateWgy(reportState);
+                List<ReportTypeEntity> listByStateLly= reportTypeDao.getListByStateLly(reportState);
+                if(!listByStateWgy.isEmpty()){
+                    for(ReportTypeEntity e : listByStateWgy){
+                        wgyContentsList.add(e.getContent());
+                    }
+                }
+                if(!listByStateLly.isEmpty()){
+                    for(ReportTypeEntity e : listByStateLly){
+                        llyContentsList.add(e.getContent());
+                    }
+                }
+            }
             if (reportIds1.length()>0){
                 reportIds=reportIds1;
                 reportRoleId="1001";
+                StringBuffer sb = new StringBuffer();
+                sb.append("[").append(reportIds1).append("-").append(reportTypeDao.contentByRoleSortNo(1001, Integer.parseInt(reportIds1))).append("]");
+                reportContents=sb.toString();
             }
             if (reportIds2.length()>0){
                 reportIds=reportIds2;
                 reportRoleId="1002";
+                StringBuffer sb = new StringBuffer();
+                sb.append("[").append(reportIds2).append("-").append(reportTypeDao.contentByRoleSortNo(1002, Integer.parseInt(reportIds2))).append("]");
+                reportContents2=sb.toString();
             }
             List<ClueReportEntity> reportList = clueReportDao
-                    .getEchartsData(startTime, endTime, areaCode, reportRoleId, reportState, reportIds);
+                    .getEchartsData(startTime, endTime, areaCode, reportRoleId, reportState, reportIds,reportContents,reportContents2,wgyContentsList,llyContentsList);
 
             Map<String, Object> map = count(reportList);
             List<String> wgynrsList = reportTypeDao.contentByRole(1001);
@@ -262,7 +287,7 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
             String[] sums = new String[villageList.size()];
             for (int i = 0; i < villageList.size(); i++) {
                 VillageEntity village = villageList.get(i);
-                reportList = clueReportDao.getEchartsData(startTime, endTime, village.getAreaCode(), reportRoleId, reportState, reportIds);
+                reportList = clueReportDao.getEchartsData(startTime, endTime, village.getAreaCode(), reportRoleId, reportState, reportIds,reportContents,reportContents2,wgyContentsList,llyContentsList);
                 Map<String, Object> dataMap = count(reportList);
                 villageNames[i] = village.getAreaName();
                 unAccepts[i] = dataMap.get("unAccept").toString();

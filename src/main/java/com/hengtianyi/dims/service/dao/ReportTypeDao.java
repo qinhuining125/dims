@@ -40,5 +40,17 @@ public interface ReportTypeDao extends AbstractGenericDao<ReportTypeEntity, Stri
    */
   String contentByRoleSortNo(@Param("roleId") Integer roleId, @Param("sortNo") Integer sortNo);
 
+  /**
+   * 根据角色，顺序查找这条报送类型是否有效
+   * @param roleId
+   * @param sortNo
+   * @return
+   */
+  String stateByRoleSortNo(@Param("roleId") Integer roleId, @Param("sortNo") Integer sortNo);
+
   List<ReportTypeEntity> getListAll(@Param("roleId") Integer roleId);
+
+  List<ReportTypeEntity>  getListByStateWgy(@Param("reportTypeState") String reportTypeState);
+
+  List<ReportTypeEntity>  getListByStateLly(@Param("reportTypeState") String reportTypeState);
 }

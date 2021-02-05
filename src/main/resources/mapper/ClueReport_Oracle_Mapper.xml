@@ -19,9 +19,8 @@
       <if test="userId !=null and userId !=''">
         and "USER_ID" = #{userId,jdbcType=CHAR}
       </if>
-      <if test="reportIds !=null and reportIds !=''">
-        and "REPORT_IDS" like ('%' ||
-        replace(replace(#{reportIds,jdbcType=VARCHAR},'%','\%'),'_','\_') || '%') escape '\'
+      <if test="reportContents !=null and reportContents !=''">
+        and instr ("REPORT_CONTENTS", #{dto.reportContents,jdbcType=VARCHAR})>0
       </if>
       <if test="createTime !=null and createTime !=''">
         and "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
@@ -40,6 +39,7 @@
     <id column="ID" property="id" jdbcType="CHAR"/>
     <result column="USER_ID" property="userId" jdbcType="CHAR"/>
     <result column="REPORT_IDS" property="reportIds" jdbcType="VARCHAR"/>
+    <result column="REPORT_CONTENTS" property="reportContents" jdbcType="VARCHAR"/>
     <result column="CLUE_DESCRIBE" property="clueDescribe" jdbcType="VARCHAR"/>
     <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
     <result column="STATE" property="state" jdbcType="DECIMAL"/>
@@ -50,7 +50,7 @@
 
   <!-- 字段集合 -->
   <sql id="Base_Column_List">
-      "ID" , "USER_ID" , "REPORT_IDS" , "CLUE_DESCRIBE" , "CREATE_TIME" , "STATE" , "REPORT_ROLE_ID" , "CLUE_NO"
+      "ID" , "USER_ID" , "REPORT_IDS", "REPORT_CONTENTS" , "CLUE_DESCRIBE" , "CREATE_TIME" , "STATE" , "REPORT_ROLE_ID" , "CLUE_NO"
   </sql>
 
   <!-- 根据主键查询 -->
@@ -130,7 +130,8 @@
 
   <!-- 添加 -->
   <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.ClueReportEntity">
-    insert into "CLUE_REPORT" ("ID" , "USER_ID" , "REPORT_IDS" , "CLUE_DESCRIBE" , "CREATE_TIME" , "STATE" , "REPORT_ROLE_ID") values (#{id,jdbcType=CHAR} , #{userId,jdbcType=CHAR} , #{reportIds,jdbcType=VARCHAR} , #{clueDescribe,jdbcType=VARCHAR} , #{createTime,jdbcType=TIMESTAMP} , #{state,jdbcType=DECIMAL} , #{reportRoleId,jdbcType=DECIMAL})
+    insert into "CLUE_REPORT" ("ID" , "USER_ID" , "REPORT_IDS" , "REPORT_CONTENTS" ,  "CLUE_DESCRIBE" , "CREATE_TIME" , "STATE" , "REPORT_ROLE_ID")
+    values (#{id,jdbcType=CHAR} , #{userId,jdbcType=CHAR} , #{reportIds,jdbcType=VARCHAR} , #{reportContents,jdbcType=VARCHAR} , #{clueDescribe,jdbcType=VARCHAR} , #{createTime,jdbcType=TIMESTAMP} , #{state,jdbcType=DECIMAL} , #{reportRoleId,jdbcType=DECIMAL})
   </insert>
 
   <!-- 选择性添加 -->
@@ -145,6 +146,9 @@
       </if>
       <if test="reportIds != null and reportIds !=''">
         "REPORT_IDS",
+      </if>
+      <if test="reportContents != null and reportContents !=''">
+        "REPORT_CONTENTS",
       </if>
       <if test="clueDescribe != null and clueDescribe !=''">
         "CLUE_DESCRIBE",
@@ -172,6 +176,9 @@
       <if test="reportIds != null and reportIds !=''">
         #{reportIds,jdbcType=VARCHAR},
       </if>
+      <if test="reportContents != null and reportContents !=''">
+        #{reportContents,jdbcType=VARCHAR},
+      </if>
       <if test="clueDescribe != null and clueDescribe !=''">
         #{clueDescribe,jdbcType=VARCHAR},
       </if>
@@ -195,7 +202,7 @@
   <update id="updateByPrimaryKey"
     parameterType="com.hengtianyi.dims.service.entity.ClueReportEntity">
     update "CLUE_REPORT" set
-      "USER_ID" = #{userId,jdbcType=CHAR} , "REPORT_IDS" = #{reportIds,jdbcType=VARCHAR} , "CLUE_DESCRIBE" = #{clueDescribe,jdbcType=VARCHAR} , "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP} , "STATE" = #{state,jdbcType=DECIMAL} , "REPORT_ROLE_ID" = #{reportRoleId,jdbcType=DECIMAL} , "CLUE_NO" = #{clueNo,jdbcType=VARCHAR}
+      "USER_ID" = #{userId,jdbcType=CHAR} , "REPORT_IDS" = #{reportIds,jdbcType=VARCHAR} , "REPORT_CONTENTS" = #{reportContents,jdbcType=VARCHAR} ,"CLUE_DESCRIBE" = #{clueDescribe,jdbcType=VARCHAR} , "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP} , "STATE" = #{state,jdbcType=DECIMAL} , "REPORT_ROLE_ID" = #{reportRoleId,jdbcType=DECIMAL} , "CLUE_NO" = #{clueNo,jdbcType=VARCHAR}
     where "ID" = #{id,jdbcType=CHAR}
   </update>
 
@@ -209,6 +216,9 @@
       </if>
       <if test="reportIds != null">
         "REPORT_IDS" = #{reportIds,jdbcType=VARCHAR},
+      </if>
+      <if test="reportContents != null">
+        "REPORT_CONTENTS" = #{reportContents,jdbcType=VARCHAR},
       </if>
       <if test="clueDescribe != null">
         "CLUE_DESCRIBE" = #{clueDescribe,jdbcType=VARCHAR},
@@ -233,7 +243,7 @@
   <select id="pagelist" resultMap="BaseResultMap"
     parameterType="com.hengtianyi.dims.service.dto.QueryDto">
     select
-    p."ID" , p."USER_ID" , p."REPORT_IDS" , p."CLUE_DESCRIBE" , p."CREATE_TIME" , p."STATE" ,
+    p."ID" , p."USER_ID" , p."REPORT_IDS" , p."REPORT_CONTENTS" , p."CLUE_DESCRIBE" , p."CREATE_TIME" , p."STATE" ,
     p."REPORT_ROLE_ID",p."CLUE_NO",
     s."USER_NAME"
     from (select ROWNUM as "ROW_ID",
@@ -255,6 +265,7 @@
 
   <sql id="page_where">
     <where>
+    1=1
       <choose>
         <when test="dto.userId != null and dto.userId != ''">
           <if test="dto.roleId == 1004 or dto.roleId == 1005">
@@ -269,9 +280,6 @@
             <if test="dto.authId != null and dto.authId==1">
               and t."REPORT_IDS" like '%9%'
             </if>
-            <!--<if test="dto.authId != null and dto.authId==2">
-              and t."REPORT_IDS" not like '%9%'
-            </if>-->
           </if>
           <if test="dto.roleId == 1003">
             and t."USER_ID" in (
@@ -306,9 +314,45 @@
       <if test="dto.reportRoleId !=null and dto.reportRoleId !=''">
         and t."REPORT_ROLE_ID" = #{dto.reportRoleId,jdbcType=DECIMAL}
       </if>
-      <if test="dto.reportIds !=null and dto.reportIds !=''">
-        and "REPORT_IDS" like concat(concat('%', #{dto.reportIds}), '%')
+      <if test="dto.reportRoleId2 !=null and dto.reportRoleId2 !=''">
+        and t."REPORT_ROLE_ID" = #{dto.reportRoleId2,jdbcType=DECIMAL}
       </if>
+      <if test="dto.reportContents !=null and dto.reportContents !=''">
+        and instr(t."REPORT_CONTENTS", #{dto.reportContents,jdbcType=VARCHAR})>0
+      </if>
+      <if test="dto.reportContents2 !=null and dto.reportContents2 !=''">
+        and instr(t."REPORT_CONTENTS", #{dto.reportContents2,jdbcType=VARCHAR})>0
+      </if>
+      <if test="dto.reportTypeState !=null and dto.reportTypeState !='' and dto.reportTypeState !='全部'">
+        <if test="(dto.wgyContentsList != null and dto.wgyContentsList.size()==0) and (dto.llyContentsList != null and dto.llyContentsList.size()==0)">
+           and state=-1
+        </if>
+
+        <if test="(dto.wgyContentsList != null and dto.wgyContentsList.size()>0) or (dto.llyContentsList != null and dto.llyContentsList.size()>0)" >
+          and (
+        </if>
+          <if test="dto.wgyContentsList != null and dto.wgyContentsList.size()>0" >
+             ( t.REPORT_ROLE_ID=1001 and
+            <foreach collection="dto.wgyContentsList" item="item1" index="index" open="(" separator=" or " close=") )">
+              instr(t."REPORT_CONTENTS", #{item1,jdbcType=VARCHAR})>0
+            </foreach>
+          </if>
+
+          <if test="dto.wgyContentsList != null and dto.wgyContentsList.size()>0" >
+             or
+          </if>
+
+          <if test="dto.llyContentsList != null and dto.llyContentsList.size()>0" >
+            ( t.REPORT_ROLE_ID=1002 and
+            <foreach collection="dto.llyContentsList" item="item2" index="index" open="(" separator=" or " close=") )">
+              instr(t."REPORT_CONTENTS", #{item2,jdbcType=VARCHAR})>0
+            </foreach>
+          </if>
+
+          <if test="(dto.wgyContentsList != null and dto.wgyContentsList.size()>0) or (dto.llyContentsList != null and dto.llyContentsList.size()>0)"  >
+            )
+          </if>
+        </if>
     </where>
   </sql>
 
@@ -329,19 +373,49 @@
     <if test="reportRoleId!=null and reportRoleId!=''">
       and "REPORT_ROLE_ID" = #{reportRoleId,jdbcType=VARCHAR}
     </if>
-    <if test="reportState!=null and reportState!=''">
-      and "REPORT_IDS" in (
-      select ID from REPORT_TYPE where "STATE" = #{reportState,jdbcType=VARCHAR}
-      )
+
+    <if test="reportContents !=null and reportContents !=''">
+      and instr("REPORT_CONTENTS", #{reportContents,jdbcType=VARCHAR})>0
     </if>
-    <if test="reportIds!=null and reportIds!=''">
-      and "REPORT_IDS" like concat(concat('%', #{reportIds}), '%')
-    </if>
+
     <if test="areaCode!=null and areaCode!=''">
       and "USER_ID" in (
       select a.id from sys_user a where a.area_code like (#{areaCode,jdbcType=VARCHAR} ||'%')
       and a.role_id &lt;1003
       )
+
+      <if test="reportState !=null and reportState !='' and reportState !='全部'">
+        <if test="(wgyContentsList != null and wgyContentsList.size()==0) and (llyContentsList != null and llyContentsList.size()==0)">
+          and state=-1
+        </if>
+
+        <if test="(wgyContentsList != null and wgyContentsList.size()>0) or (llyContentsList != null and llyContentsList.size()>0)" >
+          and (
+        </if>
+        <if test="wgyContentsList != null and wgyContentsList.size()>0" >
+          ( REPORT_ROLE_ID=1001 and
+          <foreach collection="wgyContentsList" item="item1" index="index" open="(" separator=" or " close=") )">
+            instr("REPORT_CONTENTS", #{item1,jdbcType=VARCHAR})>0
+          </foreach>
+        </if>
+
+        <if test="wgyContentsList != null and wgyContentsList.size()>0" >
+          or
+        </if>
+
+        <if test="llyContentsList != null and llyContentsList.size()>0" >
+          ( REPORT_ROLE_ID=1002 and
+          <foreach collection="llyContentsList" item="item2" index="index" open="(" separator=" or " close=") )">
+            instr("REPORT_CONTENTS", #{item2,jdbcType=VARCHAR})>0
+          </foreach>
+        </if>
+
+        <if test="(wgyContentsList != null and wgyContentsList.size()>0) or (llyContentsList != null and llyContentsList.size()>0)"  >
+          )
+        </if>
+      </if>
+
+
     </if>
   </select>
 

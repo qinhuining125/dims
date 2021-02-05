@@ -34,6 +34,16 @@ public class ClueReportEntity extends BaseEntity {
   /**
    * 上报类型内容
    */
+  private String reportContents;
+
+  /**
+   * 上报类型状态，全部、有效、无效
+   */
+  private String reportTypeState;
+
+  /**
+   * 上报类型内容
+   */
   private List<KeyValueDto> dtoList;
   /**
    * 线索描述
@@ -109,6 +119,23 @@ public class ClueReportEntity extends BaseEntity {
 
   public void setReportIds2(String reportIds2) {
     this.reportIds2 = reportIds2;
+  }
+
+
+  public String getReportContents() {
+    return reportContents;
+  }
+
+  public void setReportContents(String reportContents) {
+    this.reportContents = reportContents;
+  }
+
+  public String getReportTypeState() {
+    return reportTypeState;
+  }
+
+  public void setReportTypeState(String reportTypeState) {
+    this.reportTypeState = reportTypeState;
   }
 
   public String getReportUserAreaName() {

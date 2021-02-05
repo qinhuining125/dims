@@ -3,6 +3,7 @@ package com.hengtianyi.dims.api;
 import com.hengtianyi.common.core.base.CommonEntityDto;
 import com.hengtianyi.common.core.constant.BaseConstant;
 import com.hengtianyi.common.core.feature.ServiceResult;
+import com.hengtianyi.common.core.util.StringUtil;
 import com.hengtianyi.common.core.util.TimeUtil;
 import com.hengtianyi.common.core.util.sequence.IdGenUtil;
 import com.hengtianyi.common.core.util.sequence.SystemClock;
@@ -13,6 +14,8 @@ import com.hengtianyi.dims.service.api.RelUserAreaService;
 import com.hengtianyi.dims.service.api.ReportService;
 import com.hengtianyi.dims.service.api.SysUserService;
 import com.hengtianyi.dims.service.api.VillageService;
+import com.hengtianyi.dims.service.dao.ReportTypeDao;
+import com.hengtianyi.dims.service.dto.KeyValueDto;
 import com.hengtianyi.dims.service.dto.QueryDto;
 import com.hengtianyi.dims.service.entity.ClueFlowEntity;
 import com.hengtianyi.dims.service.entity.ClueReportEntity;
@@ -20,9 +23,8 @@ import com.hengtianyi.dims.service.entity.ReportEntity;
 import com.hengtianyi.dims.service.entity.SysUserEntity;
 import com.hengtianyi.dims.service.entity.VillageEntity;
 import com.hengtianyi.dims.utils.WebUtil;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -59,6 +61,9 @@ public class ClueReportApiController {
   private ReportService reportService;
   private static final String DEFAULT_FORMAT = "yyyyMMdd";
 
+  @Resource
+  private ReportTypeDao reportTypeDao;
+
   /**
    * @param entity 实体
    * @return json
@@ -86,12 +91,21 @@ public class ClueReportApiController {
         ReportEntity reportEntity = new ReportEntity(areaCode, serialNo, reportNo);
         reportService.insertData(reportEntity);
 
+        StringBuffer sb = new StringBuffer();
+        String[] ids = entity.getReportIds().split(StringUtil.COMMA);
+        for (int i=0; i<ids.length; i++) {
+          sb.append("[").append(ids[i]).append("-").append(reportTypeDao.contentByRoleSortNo(entity.getReportRoleId(), Integer.parseInt(ids[i]))).append("]").append(",");
+        }
+        String reportContentsResult = sb.toString().substring(0,sb.toString().length()-1);
+        entity.setReportContents(reportContentsResult);
+
         String clueId = IdGenUtil.uuid32();
         entity.setId(clueId);
         entity.setReportRoleId(roleId);
         entity.setCreateTime(SystemClock.nowDate());
         entity.setUserId(WebUtil.getUserIdByToken(request));
         entity.setClueNo(reportNo);
+
         int ct = clueReportService.insertData(entity);
 
         //上级管理员

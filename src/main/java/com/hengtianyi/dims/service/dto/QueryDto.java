@@ -2,6 +2,8 @@ package com.hengtianyi.dims.service.dto;
 
 import com.hengtianyi.common.core.base.BaseBean;
 
+import java.util.List;
+
 /**
  * @author LY
  */
@@ -56,13 +58,38 @@ public class QueryDto extends BaseBean {
    */
   private String areaCode;
   /**
-   * 上报类型角色Id
+   * 上报类型角色Id， 网格员
    */
   private Integer reportRoleId;
+
+  /**
+   * 联络员
+   */
+  private Integer reportRoleId2;
   /**
    * 上报类型ids
    */
   private String reportIds;
+
+  /**
+   * 报送类型状态，全部、有效、无效
+   */
+  private String reportTypeState;
+
+  /**
+   * 上报类型内容
+   */
+  private String  reportContents;
+
+  private List<String> wgyContentsList;
+
+  private List<String> llyContentsList;
+
+
+  /**
+   * 上报类型内容。联络员
+   */
+  private String  reportContents2;
 
   public String getReportIds() {
     return reportIds;
@@ -70,6 +97,54 @@ public class QueryDto extends BaseBean {
 
   public void setReportIds(String reportIds) {
     this.reportIds = reportIds;
+  }
+
+  public String getReportContents() {
+    return reportContents;
+  }
+
+  public void setReportContents(String reportContents) {
+    this.reportContents = reportContents;
+  }
+
+  public Integer getReportRoleId2() {
+    return reportRoleId2;
+  }
+
+  public void setReportRoleId2(Integer reportRoleId2) {
+    this.reportRoleId2 = reportRoleId2;
+  }
+
+  public String getReportContents2() {
+    return reportContents2;
+  }
+
+  public void setReportContents2(String reportContents2) {
+    this.reportContents2 = reportContents2;
+  }
+
+  public String getReportTypeState() {
+    return reportTypeState;
+  }
+
+  public void setReportTypeState(String reportTypeState) {
+    this.reportTypeState = reportTypeState;
+  }
+
+  public List<String> getWgyContentsList() {
+    return wgyContentsList;
+  }
+
+  public void setWgyContentsList(List<String> wgyContentsList) {
+    this.wgyContentsList = wgyContentsList;
+  }
+
+  public List<String> getLlyContentsList() {
+    return llyContentsList;
+  }
+
+  public void setLlyContentsList(List<String> llyContentsList) {
+    this.llyContentsList = llyContentsList;
   }
 
   public int getFirst() {

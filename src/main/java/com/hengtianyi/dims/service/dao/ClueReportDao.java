@@ -46,7 +46,11 @@ public interface ClueReportDao extends AbstractGenericDao<ClueReportEntity, Stri
                                           @Param("areaCode") String areaCode,
                                           @Param("reportRoleId") String reportRoleId,
                                           @Param("reportState") String reportState,
-                                          @Param("reportIds") String reportIds);
+                                          @Param("reportIds") String reportIds,
+                                          @Param("reportContents") String reportContents,
+                                          @Param("reportContent2") String reportContent2,
+                                          @Param("wgyContentsList") List<String> wgyContentsList,
+                                          @Param("llyContentsList") List<String> llyContentsList);
     /**
      * 查询所有的上报
      *

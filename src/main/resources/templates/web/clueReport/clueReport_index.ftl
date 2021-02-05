@@ -53,6 +53,18 @@
                 </div>
               </div>
             </div>
+            <div class="col-xs-6 col-sm-4 col-lg-3">
+              <div class="form-group">
+                <label class="col-sm-4 control-label">报送类型状态</label>
+                <div class="col-sm-7">
+                  <select name="reportTypeState" class="form-control">
+                    <option value="">全部</option>
+                    <option value="有效">有效</option>
+                    <option value="无效">无效</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="row">
             <div class="col-xs-6 col-sm-4 col-lg-3">

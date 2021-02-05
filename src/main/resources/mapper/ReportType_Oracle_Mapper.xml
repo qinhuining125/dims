@@ -236,4 +236,24 @@
     and "SORT_NO" = #{sortNo,jdbcType=INTEGER}
     and rownum &lt;= 1
   </select>
+
+  <select id="stateByRoleSortNo" parameterType="java.lang.Integer" resultType="java.lang.String">
+    select "STATE"
+    from "REPORT_TYPE"
+    where "ROLE_ID" = #{roleId,jdbcType=INTEGER}
+    and "SORT_NO" = #{sortNo,jdbcType=INTEGER}
+    and rownum &lt;= 1
+  </select>
+
+  <select id="getListByStateWgy" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select  "CONTENT"
+    from "REPORT_TYPE"
+    where "ROLE_ID" = 1001 and "STATE" = #{reportTypeState,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getListByStateLly" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select "CONTENT"
+    from "REPORT_TYPE"
+    where "ROLE_ID" = 1002 and "STATE" = #{reportTypeState,jdbcType=VARCHAR}
+  </select>
 </mapper>

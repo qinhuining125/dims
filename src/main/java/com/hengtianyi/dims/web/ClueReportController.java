@@ -19,6 +19,7 @@ import com.hengtianyi.dims.service.api.ClueReportService;
 import com.hengtianyi.dims.service.api.ReportTypeService;
 import com.hengtianyi.dims.service.api.SysUserService;
 import com.hengtianyi.dims.service.api.TownshipService;
+import com.hengtianyi.dims.service.dao.ReportTypeDao;
 import com.hengtianyi.dims.service.dto.QueryDto;
 import com.hengtianyi.dims.service.entity.*;
 import com.hengtianyi.dims.utils.WebUtil;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,6 +61,9 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
   private TownshipService townshipService;
   @Resource
   private ReportTypeService reportTypeService;
+
+  @Resource
+  private ReportTypeDao reportTypeDao;
 
   @Override
   public ClueReportService getService() {
@@ -153,13 +158,19 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
       queryDto.setUserId(userEntity.getId());
     }
     if (dto != null) {
-      if (dto.getReportIds1()!=null&&dto.getReportIds1().length()>0){
+      if (dto.getReportIds1()!=null&&dto.getReportIds1().length()>0){//最多只能选择一个
         dto.setReportIds(dto.getReportIds1());
-        dto.setReportRoleId(1001);
-      }
-      if (dto.getReportIds2()!=null&&dto.getReportIds2().length()>0){
+        queryDto.setReportRoleId(1001);
+        StringBuffer sb = new StringBuffer();
+        sb.append("[").append(dto.getReportIds1()).append("-").append(reportTypeDao.contentByRoleSortNo(1001, Integer.parseInt(dto.getReportIds1()))).append("]");
+        queryDto.setReportContents(sb.toString());
+       }
+      if (dto.getReportIds2()!=null&&dto.getReportIds2().length()>0){//最多只能选择一个
         dto.setReportIds(dto.getReportIds2());
-        dto.setReportRoleId(1002);
+        queryDto.setReportRoleId2(1002);
+        StringBuffer sb = new StringBuffer();
+        sb.append("[").append(dto.getReportIds2()).append("-").append(reportTypeDao.contentByRoleSortNo(1002, Integer.parseInt(dto.getReportIds2()))).append("]");
+        queryDto.setReportContents2(sb.toString());
       }
       if (dto.getState() != null) {
         queryDto.setState(dto.getState().intValue());
@@ -170,9 +181,32 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
       if (StringUtil.isNotEmpty(dto.getEndTime())) {
         queryDto.setEndTime(dto.getEndTime().trim() + " 00:00:00");
       }
+
       queryDto.setAreaCode(dto.getAreaCode());
       queryDto.setReportRoleId(dto.getReportRoleId());
-      queryDto.setReportIds(dto.getReportIds());
+
+      List<String> wgyContentsList = new ArrayList<>();
+      List<String> llyContentsList = new ArrayList<>();
+
+       if(dto.getReportTypeState()!=null && !dto.getReportTypeState().equals("") && !dto.getReportTypeState().equals("全部")){
+         List<ReportTypeEntity> listByStateWgy = reportTypeDao.getListByStateWgy(dto.getReportTypeState());
+         List<ReportTypeEntity> listByStateLly= reportTypeDao.getListByStateLly(dto.getReportTypeState());
+         if(!listByStateWgy.isEmpty()){
+           for(ReportTypeEntity e : listByStateWgy){
+             wgyContentsList.add(e.getContent());
+           }
+         }
+         if(!listByStateLly.isEmpty()){
+           for(ReportTypeEntity e : listByStateLly){
+             llyContentsList.add(e.getContent());
+           }
+         }
+       }
+      queryDto.setWgyContentsList(wgyContentsList);
+      queryDto.setLlyContentsList(llyContentsList);
+      queryDto.setReportTypeState(dto.getReportTypeState());
+//      queryDto.setReportIds(dto.getReportIds());
+
     }
     queryDto.setCurrentPage(pageDto.getCurrent());
     queryDto.setFirst((pageDto.getCurrent() - 1) * FrameConstant.PAGE_SIZE);
