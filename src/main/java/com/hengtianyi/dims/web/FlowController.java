@@ -3,6 +3,7 @@ package com.hengtianyi.dims.web;
 import com.hengtianyi.common.core.constant.BaseConstant;
 import com.hengtianyi.common.core.util.TimeUtil;
 import com.hengtianyi.dims.service.api.*;
+import com.hengtianyi.dims.service.entity.ReportTypeEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 流程管理
@@ -59,7 +61,13 @@ public class FlowController {
         Integer roleId2 = 1002;//联络员
         model.addAttribute("areaList", townshipService.areaList());
         model.addAttribute("reportTypeList1", reportTypeService.getListAll(roleId1));
-        model.addAttribute("reportTypeList2", reportTypeService.getListAll(roleId2));
+        List<ReportTypeEntity> reportTypeList2 = reportTypeService.getListAll(roleId2);
+        for (int i=0;i<reportTypeList2.size();i++){
+            if (reportTypeList2.get(i).getContent().indexOf("每周零报告")>-1){
+                reportTypeList2.remove(i);
+            }
+        }
+        model.addAttribute("reportTypeList2", reportTypeList2);
         return "web/analysis/clue_index";
     }
 
@@ -74,7 +82,7 @@ public class FlowController {
                            @RequestParam(required = false) String reportIds2) {
         String start = startTime != null ? TimeUtil.format(startTime, BaseConstant.DATE_FORMAT2) : "";
         String end = endTime != null ? TimeUtil.format(endTime, BaseConstant.DATE_FORMAT2) : "";
-        return clueReportService.echartsData(start, end, areaCode,reportRoleId,reportState,reportIds1,reportIds2);
+        return clueReportService.echartsData(start, end, areaCode, reportRoleId, reportState, reportIds1, reportIds2);
     }
 
     @GetMapping(value = "a/analysis/report0.html", produces = BaseConstant.HTML)
@@ -93,7 +101,7 @@ public class FlowController {
                               @RequestParam(required = false) String reportIds) {
         String start = startTime != null ? TimeUtil.format(startTime, BaseConstant.DATE_FORMAT2) : "";
         String end = endTime != null ? TimeUtil.format(endTime, BaseConstant.DATE_FORMAT2) : "";
-        return clueReportService.echartsReport0Data(start, end, areaCode,reportRoleId,reportState,reportIds);
+        return clueReportService.echartsReport0Data(start, end, areaCode, reportRoleId, reportState, reportIds);
     }
 
     @GetMapping(value = "a/analysis/advice.html", produces = BaseConstant.HTML)
