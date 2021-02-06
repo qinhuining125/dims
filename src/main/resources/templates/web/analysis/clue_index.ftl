@@ -29,7 +29,7 @@
             </div>
             <div class="col-xs-6 col-sm-4 col-lg-3">
               <div class="form-group">
-                <label class="col-sm-4 control-label">乡镇</label>
+                <label class="col-sm-5 control-label">乡镇</label>
                 <div class="col-sm-7">
                   <select name="areaCode" id="areaCode" class="form-control">
                     <option value="">全部</option>
@@ -42,7 +42,7 @@
             </div>
             <div class="col-xs-6 col-sm-4 col-lg-3">
               <div class="form-group">
-                <label class="col-sm-4 control-label">角色</label>
+                <label class="col-sm-5 control-label">角色</label>
                 <div class="col-sm-7">
                   <select name="reportRoleId" class="form-control">
                     <option value="">全部</option>
@@ -52,7 +52,9 @@
                 </div>
               </div>
             </div>
-            <div class="col-xs-6 col-sm-4 col-lg-3">
+          </div>
+          <div class="row">
+            <div class="col-xs-7 col-sm-4 col-lg-4">
               <div class="form-group">
                 <label class="col-sm-4 control-label">报送类型状态</label>
                 <div class="col-sm-7">
@@ -66,7 +68,7 @@
             </div>
             <div class="col-xs-6 col-sm-4 col-lg-3">
               <div class="form-group">
-                <label class="col-sm-4 control-label">网格员报送类型</label>
+                <label class="col-sm-5 control-label">网格员报送类型</label>
                 <div class="col-sm-7">
                   <select name="reportIds1" id="reportIds1" class="form-control">
                     <option value="">全部</option>
@@ -79,7 +81,7 @@
             </div>
             <div class="col-xs-6 col-sm-4 col-lg-3">
               <div class="form-group">
-                <label class="col-sm-4 control-label">联络员报送类型</label>
+                <label class="col-sm-5 control-label">联络员报送类型</label>
                 <div class="col-sm-7">
                   <select name="reportIds2" id="reportIds2" class="form-control">
                     <option value="">全部</option>

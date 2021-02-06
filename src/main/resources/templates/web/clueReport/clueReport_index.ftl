@@ -28,7 +28,7 @@
             </div>
             <div class="col-xs-6 col-sm-4 col-lg-3">
               <div class="form-group">
-                <label class="col-sm-4 control-label">上报角色类型：</label>
+                <label class="col-sm-5 control-label">上报角色类型：</label>
                 <div class="col-sm-7">
                   <select name="reportRoleId" class="form-control">
                     <option value="">全部</option>
@@ -40,7 +40,7 @@
             </div>
             <div class="col-xs-6 col-sm-4 col-lg-3">
               <div class="form-group">
-                <label class="col-sm-4 control-label">状态</label>
+                <label class="col-sm-5 control-label">状态</label>
                 <div class="col-sm-7">
                   <select name="state" class="form-control">
                     <option value="">全部</option>
@@ -55,7 +55,7 @@
             </div>
             <div class="col-xs-6 col-sm-4 col-lg-3">
               <div class="form-group">
-                <label class="col-sm-4 control-label">报送类型状态</label>
+                <label class="col-sm-5 control-label">报送类型状态</label>
                 <div class="col-sm-7">
                   <select name="reportTypeState" class="form-control">
                     <option value="">全部</option>
@@ -82,7 +82,7 @@
             </div>
             <div class="col-xs-6 col-sm-4 col-lg-3">
               <div class="form-group">
-                <label class="col-sm-4 control-label">村:</label>
+                <label class="col-sm-5 control-label">村:</label>
                 <div class="col-sm-7">
                   <select id="valliage" class="form-control" onchange="choseArea(this);">
                     <option value="">全部</option>
@@ -92,7 +92,7 @@
             </div>
             <div class="col-xs-6 col-sm-4 col-lg-3">
               <div class="form-group">
-                <label class="col-sm-4 control-label">网格员报送类型</label>
+                <label class="col-sm-5 control-label">网格员报送类型</label>
                 <div class="col-sm-7">
                   <select name="reportIds1" id="reportIds1" class="form-control">
                     <option value="">全部</option>
@@ -105,7 +105,7 @@
             </div>
             <div class="col-xs-6 col-sm-4 col-lg-3">
               <div class="form-group">
-                <label class="col-sm-4 control-label">联络员报送类型</label>
+                <label class="col-sm-5 control-label">联络员报送类型</label>
                 <div class="col-sm-7">
                   <select name="reportIds2" id="reportIds2" class="form-control">
                     <option value="">全部</option>
