@@ -383,40 +383,38 @@
       select a.id from sys_user a where a.area_code like (#{areaCode,jdbcType=VARCHAR} ||'%')
       and a.role_id &lt;1003
       )
-
-      <if test="reportState !=null and reportState !='' and reportState !='全部'">
-        <if test="(wgyContentsList != null and wgyContentsList.size()==0) and (llyContentsList != null and llyContentsList.size()==0)">
-          and state=-1
-        </if>
-
-        <if test="(wgyContentsList != null and wgyContentsList.size()>0) or (llyContentsList != null and llyContentsList.size()>0)" >
-          and (
-        </if>
-        <if test="wgyContentsList != null and wgyContentsList.size()>0" >
-          ( REPORT_ROLE_ID=1001 and
-          <foreach collection="wgyContentsList" item="item1" index="index" open="(" separator=" or " close=") )">
-            instr("REPORT_CONTENTS", #{item1,jdbcType=VARCHAR})>0
-          </foreach>
-        </if>
-
-        <if test="wgyContentsList != null and wgyContentsList.size()>0" >
-          or
-        </if>
-
-        <if test="llyContentsList != null and llyContentsList.size()>0" >
-          ( REPORT_ROLE_ID=1002 and
-          <foreach collection="llyContentsList" item="item2" index="index" open="(" separator=" or " close=") )">
-            instr("REPORT_CONTENTS", #{item2,jdbcType=VARCHAR})>0
-          </foreach>
-        </if>
-
-        <if test="(wgyContentsList != null and wgyContentsList.size()>0) or (llyContentsList != null and llyContentsList.size()>0)"  >
-          )
-        </if>
+    </if>
+    <if test="reportState !=null and reportState !='' and reportState !='全部'">
+      <if test="(wgyContentsList != null and wgyContentsList.size()==0) and (llyContentsList != null and llyContentsList.size()==0)">
+        and state=-1
       </if>
 
+      <if test="(wgyContentsList != null and wgyContentsList.size()>0) or (llyContentsList != null and llyContentsList.size()>0)" >
+        and (
+      </if>
+      <if test="wgyContentsList != null and wgyContentsList.size()>0" >
+        ( REPORT_ROLE_ID=1001 and
+        <foreach collection="wgyContentsList" item="item1" index="index" open="(" separator=" or " close=") )">
+          instr("REPORT_CONTENTS", #{item1,jdbcType=VARCHAR})>0
+        </foreach>
+      </if>
 
+      <if test="wgyContentsList != null and wgyContentsList.size()>0" >
+        or
+      </if>
+
+      <if test="llyContentsList != null and llyContentsList.size()>0" >
+        ( REPORT_ROLE_ID=1002 and
+        <foreach collection="llyContentsList" item="item2" index="index" open="(" separator=" or " close=") )">
+          instr("REPORT_CONTENTS", #{item2,jdbcType=VARCHAR})>0
+        </foreach>
+      </if>
+
+      <if test="(wgyContentsList != null and wgyContentsList.size()>0) or (llyContentsList != null and llyContentsList.size()>0)"  >
+        )
+      </if>
     </if>
+
   </select>
 
   <select id="getEchartsReport0Data" parameterType="java.lang.String" resultMap="BaseResultMap">
