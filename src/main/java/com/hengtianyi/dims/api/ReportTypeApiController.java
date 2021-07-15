@@ -3,6 +3,7 @@ package com.hengtianyi.dims.api;
 import com.hengtianyi.common.core.constant.BaseConstant;
 import com.hengtianyi.common.core.feature.ServiceResult;
 import com.hengtianyi.dims.service.api.ReportTypeService;
+import com.hengtianyi.dims.service.api.SysUserService;
 import com.hengtianyi.dims.service.entity.ReportTypeEntity;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +25,9 @@ public class ReportTypeApiController {
   @Resource
   private ReportTypeService reportTypeService;
 
+  @Resource
+  private SysUserService sysUserService;
+
   /**
    * 上报类型内容查询
    *
@@ -31,12 +35,14 @@ public class ReportTypeApiController {
    * @return list
    */
   @GetMapping(value = "/list.json", produces = BaseConstant.JSON)
-  public String list(@RequestParam("roldId") Integer roldId) {
+  public String list(@RequestParam("roldId") Integer roldId, @RequestParam("userId") String userId) {
     ServiceResult<Object> result = new ServiceResult<>();
+    Integer flag=sysUserService.checkUserIsChengQu(userId);
     result.setSuccess(true);
     ReportTypeEntity entity = new ReportTypeEntity();
     entity.setState("有效");
     entity.setRoleId(roldId);
+    entity.setFlag(flag);
     List<ReportTypeEntity> list = reportTypeService
         .searchAllData(entity, Collections.singletonMap("sort_no", "asc"));
     result.setResult(list);

@@ -8,20 +8,14 @@ import com.hengtianyi.common.core.util.TimeUtil;
 import com.hengtianyi.common.core.util.sequence.IdGenUtil;
 import com.hengtianyi.common.core.util.sequence.SystemClock;
 import com.hengtianyi.dims.constant.FrameConstant;
-import com.hengtianyi.dims.service.api.ClueFlowService;
-import com.hengtianyi.dims.service.api.ClueReportService;
-import com.hengtianyi.dims.service.api.RelUserAreaService;
-import com.hengtianyi.dims.service.api.ReportService;
-import com.hengtianyi.dims.service.api.SysUserService;
-import com.hengtianyi.dims.service.api.VillageService;
+import com.hengtianyi.dims.constant.RoleEnum;
+import com.hengtianyi.dims.service.api.*;
+import com.hengtianyi.dims.service.dao.ImageClueReportDao;
 import com.hengtianyi.dims.service.dao.ReportTypeDao;
+import com.hengtianyi.dims.service.dto.ClueReportDto;
 import com.hengtianyi.dims.service.dto.KeyValueDto;
 import com.hengtianyi.dims.service.dto.QueryDto;
-import com.hengtianyi.dims.service.entity.ClueFlowEntity;
-import com.hengtianyi.dims.service.entity.ClueReportEntity;
-import com.hengtianyi.dims.service.entity.ReportEntity;
-import com.hengtianyi.dims.service.entity.SysUserEntity;
-import com.hengtianyi.dims.service.entity.VillageEntity;
+import com.hengtianyi.dims.service.entity.*;
 import com.hengtianyi.dims.utils.WebUtil;
 
 import java.util.*;
@@ -49,6 +43,11 @@ public class ClueReportApiController {
   private static final Logger LOGGER = LoggerFactory.getLogger(ClueReportApiController.class);
   @Resource
   private ClueReportService clueReportService;
+
+  @Resource
+  private ImageClueReportDao imageClueReportDao;
+
+
   @Resource
   private SysUserService sysUserService;
   @Resource
@@ -65,11 +64,11 @@ public class ClueReportApiController {
   private ReportTypeDao reportTypeDao;
 
   /**
-   * @param entity 实体
+   * @param dto 实体
    * @return json
    */
   @PostMapping(value = "/saveData.json", produces = BaseConstant.JSON)
-  public String saveData(@RequestBody ClueReportEntity entity, HttpServletRequest request) {
+  public String saveData(@RequestBody ClueReportDto dto, HttpServletRequest request) {
     ServiceResult<Object> result = new ServiceResult<>();
     try {
       String userId = WebUtil.getUserIdByToken(request);
@@ -89,19 +88,27 @@ public class ClueReportApiController {
         String reportNo =
             villageEntity.getAreaName() + villageEntity.getSortNo() + "-" + date + "-" + serialNo;
         ReportEntity reportEntity = new ReportEntity(areaCode, serialNo, reportNo);
+//        ReportEntity reportEntity = new ReportEntity();
+//        reportEntity.setAreaCode(areaCode);
+//        reportEntity.setSerialNo(serialNo);
+//        reportEntity.setReportNo(reportNo);
         reportService.insertData(reportEntity);
 
         StringBuffer sb = new StringBuffer();
-        String[] ids = entity.getReportIds().split(StringUtil.COMMA);
+        String[] ids = dto.getReportIds().split(StringUtil.COMMA);
         for (int i=0; i<ids.length; i++) {
-          sb.append("[").append(ids[i]).append("-").append(reportTypeDao.contentByRoleSortNo(entity.getReportRoleId(), Integer.parseInt(ids[i]))).append("]").append(",");
+          sb.append("[").append(ids[i]).append("-").append(reportTypeDao.contentByRoleSortNo(userEntity.getRoleId(), Integer.parseInt(ids[i]))).append("]").append(",");
         }
         String reportContentsResult = sb.toString().substring(0,sb.toString().length()-1);
+        ClueReportEntity entity = new ClueReportEntity();
         entity.setReportContents(reportContentsResult);
 
         String clueId = IdGenUtil.uuid32();
+        entity.setReportIds(dto.getReportIds());
+        entity.setClueDescribe(dto.getClueDescribe());
         entity.setId(clueId);
         entity.setReportRoleId(roleId);
+        entity.setToVillageMgr(dto.getToVillageMgr());
         entity.setCreateTime(SystemClock.nowDate());
         entity.setUserId(WebUtil.getUserIdByToken(request));
         entity.setClueNo(reportNo);
@@ -109,8 +116,60 @@ public class ClueReportApiController {
         int ct = clueReportService.insertData(entity);
 
         //上级管理员
-        SysUserEntity adminUser = sysUserService
-            .superiorUser(userEntity.getAreaCode().substring(0, 9), 1003);
+        SysUserEntity adminUser;
+
+        boolean flag = entity.getToVillageMgr()!= null && entity.getToVillageMgr().equals("上报给村干部");
+        if(flag){
+          //村干部
+          adminUser = sysUserService
+                  .superiorUser(userEntity.getAreaCode().substring(0, 12),1012);
+        }else {
+          adminUser = sysUserService
+                  .superiorUser(userEntity.getAreaCode().substring(0, 9),1003);
+        }
+
+        //上传图片 这里需要对多图片进行处理
+        List<String> ss=dto.getImageArray();
+        if(ss.size()>0){
+          for(int i=0;i < ss.size() ;i++){
+            ImageClueReportEntity imageClueReportEntity = new ImageClueReportEntity();
+            String imageId = IdGenUtil.uuid32();
+            imageClueReportEntity.setId(imageId);
+            imageClueReportEntity.setType(ImageClueReportEntity.TYPE_IMAGE);
+            imageClueReportEntity.setClueId(clueId);
+            imageClueReportEntity.setImageUrl(ss.get(i));
+            imageClueReportEntity.setCreateTime(SystemClock.nowDate());
+            imageClueReportDao.insert(imageClueReportEntity);
+          }
+        }
+        List<String> ssAudio=dto.getAudioArray();
+        if(ssAudio.size()>0){
+          for(int i=0;i < ssAudio.size() ;i++){
+            ImageClueReportEntity imageClueReportEntity = new ImageClueReportEntity();
+            String audioId = IdGenUtil.uuid32();
+            imageClueReportEntity.setId(audioId);
+            imageClueReportEntity.setType(ImageClueReportEntity.TYPE_AUDIO);
+            imageClueReportEntity.setClueId(clueId);
+            imageClueReportEntity.setImageUrl(ssAudio.get(i));
+            imageClueReportEntity.setCreateTime(SystemClock.nowDate());
+            imageClueReportDao.insert(imageClueReportEntity);
+          }
+        }
+
+        List<String> ssVideo=dto.getVideoArray();
+        if(ssVideo.size()>0){
+          for(int i=0;i < ssVideo.size() ;i++){
+            ImageClueReportEntity imageClueReportEntity = new ImageClueReportEntity();
+            String videoId = IdGenUtil.uuid32();
+            imageClueReportEntity.setId(videoId);
+            imageClueReportEntity.setType(ImageClueReportEntity.TYPE_VIDEO);
+            imageClueReportEntity.setClueId(clueId);
+            imageClueReportEntity.setImageUrl(ssVideo.get(i));
+            imageClueReportEntity.setCreateTime(SystemClock.nowDate());
+            imageClueReportDao.insert(imageClueReportEntity);
+          }
+        }
+
         //插入一条流程
         ClueFlowEntity flowEntity = new ClueFlowEntity();
         flowEntity.setId(IdGenUtil.uuid32());
@@ -165,7 +224,7 @@ public class ClueReportApiController {
       queryDto.setFirst((dto.getCurrentPage() - 1) * FrameConstant.PAGE_SIZE);
       queryDto.setEnd(dto.getCurrentPage() * FrameConstant.PAGE_SIZE);
       queryDto.setRoleId(roleId);
-      if (roleId < 1005) {
+      if (roleId < 1005 || roleId==1012 || (roleId>=3000 && roleId<=3999)) {
         queryDto.setUserId(userId);
       }
       queryDto.setAuthId(userEntity.getAuthId());
@@ -199,6 +258,9 @@ public class ClueReportApiController {
     try {
       ClueReportEntity entity = clueReportService.searchDataById(clueId);
       entity.setFlows(clueFlowService.getAllFlows(clueId));
+      entity.setImg(clueReportService.getAttachmentsByIdType(clueId, ImageClueReportEntity.TYPE_IMAGE));
+      entity.setAudio(clueReportService.getAttachmentsByIdType(clueId, ImageClueReportEntity.TYPE_AUDIO));
+      entity.setVideo(clueReportService.getAttachmentsByIdType(clueId, ImageClueReportEntity.TYPE_VIDEO));
       result.setResult(entity);
       result.setSuccess(true);
     } catch (Exception e) {
@@ -245,8 +307,46 @@ public class ClueReportApiController {
    * @returnknowTask
    */
   @PostMapping(value = "/turnToOtherTask.json", produces = BaseConstant.JSON)
-  public String turnToOtherTask(@RequestBody ClueFlowEntity flowEntity, HttpServletRequest request) {
-    return business(flowEntity, request, 4);
+  public String turnToOtherTask(@RequestBody ClueReportEntity entity, HttpServletRequest request) {
+//    return business(flowEntity, request, 4);
+
+    ServiceResult<Object> result = new ServiceResult<>();
+    try {
+      ClueReportEntity clueReportEntity = clueReportService.searchDataById(entity.getId());
+      SysUserEntity u = sysUserService.searchDataById(clueReportEntity.getUserId());
+
+      int roleId = entity.getRoleId();//获取前台界面选择的转办到的人的角色；
+      SysUserEntity adminUser;//分配给的人员
+      if (roleId == 1012) {
+        //村干部
+        adminUser = sysUserService
+                .superiorUser(u.getAreaCode().substring(0, 12), 1012);
+      } else {
+        //乡镇站所
+        adminUser = sysUserService
+                .superiorUser(u.getAreaCode().substring(0, 9), roleId);
+      }
+      //更改线索状态
+      clueReportEntity.setState(Short.parseShort("0"));//转办的，都设定为0，未处理，因为转办过去之后，需要新的用户重新受理并办结
+      int cr = clueReportService.updateData(clueReportEntity);
+
+      //插入一条流程
+      ClueFlowEntity flowEntity = new ClueFlowEntity();
+      flowEntity.setId(IdGenUtil.uuid32());
+      flowEntity.setClueId(entity.getId());
+      flowEntity.setState(0);//转办的，都设定为0，未处理，因为转办过去之后，需要新的用户重新受理并办结
+      flowEntity.setReceiveId(adminUser.getId());
+      flowEntity.setCreateTime(SystemClock.nowDate());
+      int ct = clueFlowService.insertData(flowEntity);
+      result.setSuccess(cr > 0 && ct > 0);
+      result.setResult(cr > 0 && ct > 0);
+
+    } catch (Exception e) {
+      result.setError("操作失败");
+      LOGGER.error("[accept]失败,{}", e.getMessage(), e);
+    }
+    return result.toJson();
+
   }
 
   /**
@@ -261,7 +361,6 @@ public class ClueReportApiController {
     ServiceResult<Object> result = new ServiceResult<>();
     try {
       ClueReportEntity clueReportEntity = clueReportService.searchDataById(flowEntity.getClueId());
-      SysUserEntity reportUser = sysUserService.searchDataById(clueReportEntity.getUserId());
       //当前用户
       String userId = WebUtil.getUserIdByToken(request);
       Boolean flag = false;
@@ -328,4 +427,57 @@ public class ClueReportApiController {
     }
     return result.toJson();
   }
+
+
+  /**
+   * 判断用户是否是城区，滨河城区管委会
+   * @param userId
+   * @return
+   */
+  @GetMapping(value = "/checkUserIsChengQu.json", produces = BaseConstant.JSON)
+  public String checkUserIsChengQu(@RequestParam("userId") String userId) {
+    ServiceResult<Object> result = new ServiceResult<>();
+    SysUserEntity userEntity = sysUserService.searchDataById(userId);
+    boolean flag = userEntity.getAreaCode() != null && userEntity.getAreaCode().substring(0, 9).equals("140725701");
+    result.setResult(flag);
+    return result.toJson();
+  }
+
+
+  //问题上报可以转办的人员角色
+  @GetMapping(value = "/reportZBRoleList.json", produces = BaseConstant.JSON)
+  public String reportZBRoleList(@RequestParam("type") Integer type) {
+    ServiceResult<Object> result = new ServiceResult<>();
+    try {
+      RoleEnum[] roleEnums = RoleEnum.values();
+      List<KeyValueDto> roleList = new ArrayList<>();
+
+      if(type==0){//当前登录系统的用户是1003，乡镇纪委管理员，乡镇纪委管理员管理员进行转办的话，只能选择到村干部和站所
+        for (RoleEnum roleEnum : roleEnums) {
+          if(roleEnum.getRoleId()==1012 || (roleEnum.getRoleId()>=3000 && roleEnum.getRoleId()<=3999)
+          ){//乡镇纪委管理员，村干部，以及所有的站所
+            roleList.add(new KeyValueDto(roleEnum.getRoleId().toString(), roleEnum.getName()));
+          }
+        }
+      }else if(type==1){//当前登录系统的用户是1012，村干部，村干部进行转办的话，只能选择到乡镇纪委管理员和站所
+        for (RoleEnum roleEnum : roleEnums) {
+          if(roleEnum.getRoleId()==1003 ||  (roleEnum.getRoleId()>=3000 && roleEnum.getRoleId()<=3999)
+          ){//乡镇纪委管理员，村干部，以及所有的站所
+            roleList.add(new KeyValueDto(roleEnum.getRoleId().toString(), roleEnum.getName()));
+          }
+        }
+      }
+
+      // 全部的角色数据
+      result.setResult(roleList);
+      result.setSuccess(true);
+    } catch (Exception e) {
+      LOGGER.error("[查询问题上报转办角色出错],{}", e.getMessage(), e);
+      result.setError("查询问题上报转办角色出错");
+      result.setSuccess(true);
+    }
+    return result.toJson();
+  }
+
+
 }

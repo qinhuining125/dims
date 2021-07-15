@@ -12,6 +12,7 @@ import com.hengtianyi.common.core.util.sequence.SystemClock;
 import com.hengtianyi.dims.aop.WebLog;
 import com.hengtianyi.dims.constant.FrameConstant;
 import com.hengtianyi.dims.constant.LogEnum;
+import com.hengtianyi.dims.constant.RoleEnum;
 import com.hengtianyi.dims.exception.ErrorEnum;
 import com.hengtianyi.dims.exception.WebException;
 import com.hengtianyi.dims.service.api.ClueFlowService;
@@ -20,6 +21,8 @@ import com.hengtianyi.dims.service.api.ReportTypeService;
 import com.hengtianyi.dims.service.api.SysUserService;
 import com.hengtianyi.dims.service.api.TownshipService;
 import com.hengtianyi.dims.service.dao.ReportTypeDao;
+import com.hengtianyi.dims.service.dao.SysUserDao;
+import com.hengtianyi.dims.service.dto.KeyValueDto;
 import com.hengtianyi.dims.service.dto.QueryDto;
 import com.hengtianyi.dims.service.entity.*;
 import com.hengtianyi.dims.utils.WebUtil;
@@ -65,6 +68,9 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
   @Resource
   private ReportTypeDao reportTypeDao;
 
+  @Resource
+  private SysUserDao sysUserDao;
+
   @Override
   public ClueReportService getService() {
     return clueReportService;
@@ -93,7 +99,7 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
     SysUserEntity userEntity = WebUtil.getUser(request);
     Integer roleId = userEntity.getRoleId();
     model.addAttribute("roleId", roleId);
-    Integer roleId1 = 1001;//        网格员
+    Integer roleId1 = 1001;//网格员
     Integer roleId2 = 1002;//联络员
     model.addAttribute("reportTypeList1", reportTypeService.getListAll(roleId1));
     model.addAttribute("reportTypeList2", reportTypeService.getListAll(roleId2));
@@ -245,6 +251,9 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
       }
 
       one.setFlows(clueFlowService.getAllFlows(one.getId()));
+      one.setImg(clueReportService.getAttachmentsByIdType(id,ImageClueReportEntity.TYPE_IMAGE));//图片
+      one.setAudio(clueReportService.getAttachmentsByIdType(id,ImageClueReportEntity.TYPE_AUDIO));//语音
+      one.setVideo(clueReportService.getAttachmentsByIdType(id,ImageClueReportEntity.TYPE_VIDEO));//视频
       one.setDtoList(reportTypeService.contents(one.getReportRoleId(), one.getReportIds()));
       result.setSuccess(true);
       result.setResult(one);
@@ -302,6 +311,79 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
     }
   }
 
+  @GetMapping(value = "/editTask.html", produces = BaseConstant.HTML)
+  public String editTask(Model model, @RequestParam String uid) {
+
+   if (StringUtil.isBlank(uid)) {
+      throw new WebException(ErrorEnum.AUTHORIZE_PARAMETER);
+    }
+
+    List<TownshipEntity> list = townshipService.areaList();
+    ClueReportEntity entity = null;
+    if (StringUtil.isNoneBlank(uid)) {
+      entity = this.getDataByIdCommon(uid);
+      if (entity == null) {
+        throw new WebException(ErrorEnum.NO_DATA);
+      }
+    }
+    model.addAttribute("mapping", MAPPING);
+    SysUserEntity userEntity = sysUserService.searchDataById(entity.getUserId());
+    if (userEntity != null) {
+      entity.setUserName(userEntity.getUserName());
+      TownshipEntity listOne=null;
+      for(TownshipEntity l : list){
+        TownshipEntity a = l;
+        if(a.getAreaCode().equals(userEntity.getAreaCode().substring(0,9))) {
+          listOne=a;
+          break;
+        }
+      }
+
+      entity.setReportUserAreaName(null==listOne ? "" : listOne.getAreaName());
+
+    }
+    entity.setFlows(clueFlowService.getAllFlows(entity.getId()));
+    entity.setDtoList(reportTypeService.contents(entity.getReportRoleId(), entity.getReportIds()));
+    model.addAttribute("entity", entity);
+
+    model.addAttribute("uid", uid);
+    model.addAttribute("mapping", MAPPING);
+    return "web/clueReport/editTask_tree";
+  }
+
+
+  //对于状态是已办结的，可以允许再修改办结描述
+  @ResponseBody
+  @PostMapping(value = "/editTask.json", produces = BaseConstant.JSON)
+  public String editTask(@RequestParam String uid,@RequestParam String remark) {
+    if (StringUtil.isBlank(uid)) {
+      throw new WebException(ErrorEnum.AUTHORIZE_PARAMETER);
+    }
+    SysUserEntity u = WebUtil.getUser();;
+    int ct = -1;
+    boolean flag=true;
+    //单个成员点击，时候会触发这个事件，新加入一条
+    if (StringUtil.isNotBlank(uid)) {
+      ClueFlowEntity flowEntity = new ClueFlowEntity();
+      flowEntity.setId(IdGenUtil.uuid32());
+      flowEntity.setClueId(uid);
+      flowEntity.setState(2);//2已办结
+      flowEntity.setCreateTime(SystemClock.nowDate());
+      flowEntity.setReceiveId(u.getId());
+      flowEntity.setRemark(remark);
+      ct=clueFlowService.insertData(flowEntity);
+    }
+    if(flag){
+      ClueReportEntity clueReportEntity = clueReportService.searchDataById(uid) ;
+      clueReportEntity.setState(Short.valueOf("2"));//0未处理，1已受理，2已办结，3已知晓，4已转办
+      ct = clueReportService.updateData(clueReportEntity);
+    }
+    ServiceResult<Boolean> result = new ServiceResult<>();
+    //这样写是否有问题
+    result.setSuccess(ct > -1);
+    result.setResult(ct > -1);
+    return result.toJson();
+  }
 
 
   @GetMapping(value = "/knowTask.html", produces = BaseConstant.HTML)
@@ -352,6 +434,17 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
     if (StringUtil.isBlank(uid)) {
       throw new WebException(ErrorEnum.AUTHORIZE_PARAMETER);
     }
+    RoleEnum[] roleEnums = RoleEnum.values();
+    List<KeyValueDto> roleList = new ArrayList<>();
+    for (RoleEnum roleEnum : roleEnums) {
+      if(roleEnum.getRoleId()==1012
+              || (roleEnum.getRoleId()>=3000 && roleEnum.getRoleId()<=3999)
+      ){//村干部，所有站所
+        roleList.add(new KeyValueDto(roleEnum.getRoleId().toString(), roleEnum.getName()));
+      }
+    }
+    // 全部的角色数据
+    model.addAttribute("roleList", roleList);
     model.addAttribute("uid", uid);
     model.addAttribute("mapping", MAPPING);
     return "web/clueReport/turnToOtherTask_tree";
@@ -361,26 +454,33 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
   //已转办（选择已转办后，不需要后续操作）
   @ResponseBody
   @PostMapping(value = "/turnToOtherTask.json", produces = BaseConstant.JSON)
-  public String turnToOtherTask(@RequestParam String uid,HttpServletRequest request) {
+  public String turnToOtherTask(@RequestParam String uid,@RequestParam Integer roleId) {
     if (StringUtil.isBlank(uid)) {
       throw new WebException(ErrorEnum.AUTHORIZE_PARAMETER);
     }
-    SysUserEntity u = WebUtil.getUser();;
+    SysUserEntity u = WebUtil.getUser();
     int ct = -1;
     boolean flag=true;
-    //单个成员点击，时候会触发这个事件，新加入一条
-    if (StringUtil.isNotBlank(uid)) {
-      ClueFlowEntity flowEntity = new ClueFlowEntity();
-      flowEntity.setId(IdGenUtil.uuid32());
-      flowEntity.setClueId(uid);
-      flowEntity.setState(4);//4已转办
-      flowEntity.setCreateTime(SystemClock.nowDate());
-      flowEntity.setReceiveId(u.getId());
-      ct=clueFlowService.insertData(flowEntity);
+
+    ClueReportEntity clueReportEntity = clueReportService.searchDataById(uid) ;
+    //要分配给这个村对应的站所的账号，不能直接根据角色分配
+    if (StringUtil.isNotBlank(uid) && roleId > 0) {
+      String userId = clueReportEntity.getUserId();
+      SysUserEntity uu = sysUserDao.getUserById(userId);
+      SysUserEntity user = sysUserService.superiorUser(uu.getAreaCode().substring(0, 12),roleId);
+      //单个成员点击，时候会触发这个事件，新加入一条
+      if (StringUtil.isNotBlank(uid)) {
+        ClueFlowEntity flowEntity = new ClueFlowEntity();
+        flowEntity.setId(IdGenUtil.uuid32());
+        flowEntity.setClueId(uid);
+        flowEntity.setState(0);//4已转办
+        flowEntity.setCreateTime(SystemClock.nowDate());
+        flowEntity.setReceiveId(user.getId());
+        ct = clueFlowService.insertData(flowEntity);
+      }
     }
     if(flag){
-      ClueReportEntity clueReportEntity = clueReportService.searchDataById(uid) ;
-      clueReportEntity.setState(Short.valueOf("4"));//0未处理，1已受理，2已办结，3已知晓，4已转办
+      clueReportEntity.setState(Short.valueOf("0"));//0未处理，1已受理，2已办结，3已知晓，4已转办  (转办过去的单子设置为未处理)
       ct = clueReportService.updateData(clueReportEntity);
     }
     ServiceResult<Boolean> result = new ServiceResult<>();

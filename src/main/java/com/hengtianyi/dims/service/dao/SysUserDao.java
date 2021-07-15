@@ -92,6 +92,15 @@ public interface SysUserDao extends AbstractGenericDao<SysUserEntity, String> {
    */
   SysUserEntity superiorUser(@Param("areaCode") String areaCode, @Param("roleId") Integer roleId);
 
+
+  /**
+   * 根据id获取用户实体类
+   *
+   * @param id 用户id
+   * @return 用户
+   */
+  SysUserEntity getUserById(@Param("id") String id);
+
   /**
    * 所有子用户
    *

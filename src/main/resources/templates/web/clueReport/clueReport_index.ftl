@@ -96,8 +96,8 @@
                 <div class="col-sm-7">
                   <select name="reportIds1" id="reportIds1" class="form-control">
                     <option value="">全部</option>
-                    <#list reportTypeList1 as obj>
-                      <option value="${(obj.sortNo)!}">${(obj.content)!}</option>
+                    <#list reportTypeList1 as obj1>
+                      <option value="${(obj1.sortNo)!}">${(obj1.content)!}</option>
                     </#list>
                   </select>
                 </div>
@@ -109,8 +109,8 @@
                 <div class="col-sm-7">
                   <select name="reportIds2" id="reportIds2" class="form-control">
                     <option value="">全部</option>
-                    <#list reportTypeList2 as obj>
-                      <option value="${(obj.sortNo)!}">${(obj.content)!}</option>
+                    <#list reportTypeList2 as obj2>
+                      <option value="${(obj2.sortNo)!}">${(obj2.content)!}</option>
                     </#list>
                   </select>
                 </div>
@@ -180,9 +180,15 @@
 <script id="template-clueReport" type="text/x-handlebars-template">
   <td data-id="{{id}}">
     <button class="btn btn-primary btn-xs o-ch ops-view"><i class="fa fa-eye"></i> 查看</button>
-      <#--<button class="btn btn-warning btn-xs o-c ops-edit"><i class="fa fa-edit"></i> 修改</button>-->
 
-    <#if roleId == 1003 || roleId == 1004 || roleId == 1005 >
+    <#if roleId == 1003 || roleId == 1004 || roleId == 1005 || roleId == 1012 >
+      {{#ifEqual state 2}}
+<#--      <button class="btn btn-warning btn-xs o-c ops-edit"><i class="fa fa-edit"></i> 修改</button>-->
+      <button class="btn btn-success btn-xs mg-5 o-c" onclick="editTask(this)"><i class="fa fa-user"></i>修改</button>
+      {{/ifEqual}}
+    </#if>
+
+    <#if roleId == 1003 || roleId == 1004 || roleId == 1005 || roleId == 1012>
     {{#ifEqual state 0}}
     <button class="btn btn-success btn-xs mg-5 o-c" onclick="knowTask(this)"><i class="fa fa-user"></i>&nbsp;已知晓</button>
     <button class="btn btn-success btn-xs mg-5 o-c" onclick="turnToOtherTask(this)"><i class="fa fa-user"></i>&nbsp;已转办</button>
@@ -249,6 +255,44 @@
         <div class="form-control-static">{{formatDate createTime "yyyy-MM-dd hh:mm:ss"}}</div>
       </div>
     </div>
+
+
+    <div class="form-group">
+      <label class="col-xs-4 control-label">图片：</label>
+      <div id="localImag">
+        {{#each img}}
+        <img src="${global.preUrl!}{{imageUrl}}" width="200" height="200" />
+        {{/each}}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-xs-4 control-label">语音：</label>
+      <div id="localAudio">
+          <table class="table table-condensed table-hover table-striped table-bordered no-margins">
+        {{#each audio}}
+          <tr>
+<#--        <a href="${global.preUrl!}{{imageUrl}}">点击右键在新窗口播放语音{{imageUrl}}</a>-->
+          <audio width="70%" height="70%" controls="controls" src="${global.preUrl!}{{imageUrl}}"/>
+          </tr>
+        {{/each}}
+          </table>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-xs-4 control-label">视频：</label>
+      <div id="localVideo">
+          {{#each video}}
+          <tr>
+<#--            <video width="70%" height="70%" controls="controls" src="http://183.201.252.83:49012/upload/1624943914308video2.mp4"/>-->
+          <video width="70%" height="70%" controls="controls" src="${global.preUrl!}{{imageUrl}}"/>
+          </tr>
+          {{/each}}
+      </div>
+    </div>
+
+
     <table class="table table-condensed table-hover table-striped table-bordered no-margins">
       <thead>
       <tr>
@@ -324,6 +368,9 @@
     });
   }
 
+
+
+
   function choseArea(obj) {
     var code = $(obj).val();
     if (code == '') {
@@ -349,6 +396,25 @@
     });
   }
 
+
+  function editTask(obj) {
+    obj = $(obj);
+    var clueId = obj.parent().attr("data-id");
+    //直接用ajax处理流程返回就可以了。
+    openLayer({
+      "type": 2,
+      "title": "修改办结描述",
+      "area": ["800px", "600px"],
+      "maxmin": false,
+      "content": "${mapping!}/editTask.html?uid=" + clueId,
+      "yes": function (index, layero) {
+        // 调用子窗口的添加方法
+        layero.find("iframe")[0].contentWindow.subSave();
+      }
+    });
+  }
+
+
   function turnToOtherTask(obj) {
     obj = $(obj);
     var clueId = obj.parent().attr("data-id");
@@ -356,7 +422,7 @@
     openLayer({
       "type": 2,
       "title": "已转办",
-      "area": ["400px", "200px"],
+      "area": ["600px", "400px"],
       "maxmin": false,
       "content": "${mapping!}/turnToOtherTask.html?uid=" + clueId,
       "yes": function (index, layero) {
@@ -473,10 +539,10 @@
         });
       });
     }
-
-    <#-- 通用功能的入口 -->
+      <#-- 通用功能的入口 -->
     CommonListFun(pageParams, bindRowEvent);
   });
 </script>
+
 </body>
 </html>

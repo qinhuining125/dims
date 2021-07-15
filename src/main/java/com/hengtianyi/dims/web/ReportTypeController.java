@@ -153,7 +153,6 @@ public class ReportTypeController extends AbstractBaseController<ReportTypeEntit
   public void clearEntity(ReportTypeEntity entity) {
     if (null != entity) {
       entity.clean();
-
     }
   }
 }

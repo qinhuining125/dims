@@ -31,6 +31,13 @@ public class ReportTypeEntity extends BaseEntity {
    */
   private String state;
 
+  /**
+   * 是否是城区（目前符合条件的只有，滨河城区管委会的网格员，联络员视为城区，其他的视为农村）
+   * 0：否
+   * 1：是
+   */
+  private Integer flag;
+
   public String getState() {
     return state;
   }
@@ -128,6 +135,15 @@ public class ReportTypeEntity extends BaseEntity {
    */
   public void setCreateTime(Date createTime){
     this.createTime = createTime;
+  }
+
+
+  public Integer getFlag() {
+    return flag;
+  }
+
+  public void setFlag(Integer flag) {
+    this.flag = flag;
   }
 
   @Override

@@ -20,20 +20,19 @@ public final class FrameConstant {
 
 //  public static final String PREFIX_URL = "http://localhost:81/";
 
-
-  public static final String PREFIX_URL = "http://183.201.252.83:49012/";
-
-    public static final String PREFIX_URL2 = "http://183.201.252.83:49012";
+//
+//  public static final String PREFIX_URL = "http://183.201.252.83:49012/";
+//
+//    public static final String PREFIX_URL2 = "http://183.201.252.83:49012";
 
 //  public static final String PREFIX_URL = "http://127.0.0.1:81/";
 
 //  public static final String PREFIX_URL2 = "http://127.0.0.1:81";
 
 
-//  public static final String PREFIX_URL = "http://192.168.1.112:81/";
-//
-//  public static final String PREFIX_URL2 = "http://192.168.1.112:81";
+  public static final String PREFIX_URL = "http://183.201.252.83:49012/";
 
+  public static final String PREFIX_URL2 = "http://183.201.252.83:49012";
 
 
 //  public static final String PREFIX_URL = "http://192.168.32.240:81/";

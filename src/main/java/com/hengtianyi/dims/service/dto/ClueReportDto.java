@@ -1,30 +1,30 @@
-package com.hengtianyi.dims.service.entity;
+package com.hengtianyi.dims.service.dto;
 
-import com.hengtianyi.common.core.base.BaseEntity;
-import com.hengtianyi.dims.service.dto.KeyValueDto;
+import com.hengtianyi.common.core.base.BaseBean;
+import com.hengtianyi.dims.service.entity.ClueFlowEntity;
+
 import java.util.Date;
 import java.util.List;
 
 /**
- * ClueReport实体类
- * <p>Table: CLUE_REPORT</p>
- *
- * @author LY
+ * @author
  */
-public class ClueReportEntity extends BaseEntity {
+public class ClueReportDto extends BaseBean {
+
+  private static final long serialVersionUID = 5017373809545239291L;
 
 
-  private static final long serialVersionUID = 7914269882113570329L;
-  private String id;
 
-  /**
-   * 用户Id
-   */
-  private String userId;
-  /**
-   * username
-   */
-  private String userName;
+  //图片接收
+  private List<String> imageArray;
+
+
+  //语音接收
+  private List<String> audioArray;
+
+
+  //视频接收
+  private List<String> videoArray;
 
   /**
    * 上报类型ids
@@ -104,25 +104,6 @@ public class ClueReportEntity extends BaseEntity {
   //新指派（转办）给的人的角色
   private int roleId;
 
-
-
-  /**
-   * 图片
-   */
-  private String images;
-
-  private List<ImageClueReportEntity> img;
-
-  private List<ImageClueReportEntity> audio;
-
-  private List<ImageClueReportEntity> video;
-
-  private  String[] imgApp;
-
-  private  String[] audioApp;
-
-  private  String[] videoApp;
-
   /**
    * 网格员上报类型ids
    */
@@ -131,63 +112,6 @@ public class ClueReportEntity extends BaseEntity {
    * 联络员上报类型ids
    */
   private String reportIds2;
-
-
-  public String getImages() {
-    return images;
-  }
-
-  public void setImages(String images) {
-    this.images = images;
-  }
-
-  public List<ImageClueReportEntity> getImg() {
-    return img;
-  }
-
-  public void setImg(List<ImageClueReportEntity> img) {
-    this.img = img;
-  }
-
-  public String[] getImgApp() {
-    return imgApp;
-  }
-
-  public void setImgApp(String[] imgApp) {
-    this.imgApp = imgApp;
-  }
-
-  public String[] getAudioApp() {
-    return audioApp;
-  }
-
-  public void setAudioApp(String[] audioApp) {
-    this.audioApp = audioApp;
-  }
-
-  public String[] getVideoApp() {
-    return videoApp;
-  }
-
-  public void setVideoApp(String[] videoApp) {
-    this.videoApp = videoApp;
-  }
-
-  public List<ImageClueReportEntity> getAudio() {
-    return audio;
-  }
-
-  public void setAudio(List<ImageClueReportEntity> audio) {
-    this.audio = audio;
-  }
-
-  public List<ImageClueReportEntity> getVideo() {
-    return video;
-  }
-
-  public void setVideo(List<ImageClueReportEntity> video) {
-    this.video = video;
-  }
 
   public String getReportIds1() {
     return reportIds1;
@@ -230,14 +154,6 @@ public class ClueReportEntity extends BaseEntity {
     this.reportUserAreaName = reportUserAreaName;
   }
 
-  public String getId() {
-    return this.id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
   public int getRoleId() {
     return roleId;
   }
@@ -246,23 +162,7 @@ public class ClueReportEntity extends BaseEntity {
     this.roleId = roleId;
   }
 
-  /**
-   * 获取userId属性(用户Id)
-   *
-   * @return 用户Id
-   */
-  public String getUserId() {
-    return this.userId;
-  }
 
-  /**
-   * 设置userId属性
-   *
-   * @param userId 用户Id
-   */
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
 
   /**
    * 获取reportIds属性(上报类型ids)
@@ -344,14 +244,6 @@ public class ClueReportEntity extends BaseEntity {
     this.state = state;
   }
 
-  public String getUserName() {
-    return userName;
-  }
-
-  public void setUserName(String userName) {
-    this.userName = userName;
-  }
-
   public List<ClueFlowEntity> getFlows() {
     return flows;
   }
@@ -416,8 +308,27 @@ public class ClueReportEntity extends BaseEntity {
     this.dtoList = dtoList;
   }
 
-  @Override
-  public String toString() {
-    return "ClueReportEntity";
+  public List<String> getImageArray() {
+    return imageArray;
+  }
+
+  public void setImageArray(List<String> imageArray) {
+    this.imageArray = imageArray;
+  }
+
+  public List<String> getAudioArray() {
+    return audioArray;
+  }
+
+  public void setAudioArray(List<String> audioArray) {
+    this.audioArray = audioArray;
+  }
+
+  public List<String> getVideoArray() {
+    return videoArray;
+  }
+
+  public void setVideoArray(List<String> videoArray) {
+    this.videoArray = videoArray;
   }
 }

@@ -35,6 +35,10 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
     private ClueReportDao clueReportDao;
     @Resource
     private ClueFlowDao clueFlowDao;
+
+    @Resource
+    private ImageClueReportDao imageClueReportDao;
+
     @Resource
     private VillageDao villageDao;
     @Resource
@@ -97,6 +101,52 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
         return DEFAULT_ORDER_SQL;
     }
 
+
+    /**
+     * 获取问题详情图片
+     * @param id
+     * @return
+     */
+    @Override
+    public List<ImageClueReportEntity> getImages(String id){
+        ImageClueReportEntity imageClueReportEntity = new ImageClueReportEntity();
+        imageClueReportEntity.setClueId(id);
+        List<ImageClueReportEntity> list = imageClueReportDao.searchAllData(imageClueReportEntity);
+        System.out.println(list.isEmpty());
+        System.out.println(list);
+        if (!list.isEmpty()){
+            if (list.get(0)==null){
+                return null;
+            }
+        }else{
+            return null;
+        }
+        return list;
+    }
+
+    /**
+     * 根据clueId， type，获取图片，语音，视频
+     * @param id
+     * @return
+     */
+    @Override
+    public List<ImageClueReportEntity> getAttachmentsByIdType(String id, int type){
+        ImageClueReportEntity imageClueReportEntity = new ImageClueReportEntity();
+        imageClueReportEntity.setClueId(id);
+        imageClueReportEntity.setType(type);
+        List<ImageClueReportEntity> list = imageClueReportDao.searchAllData(imageClueReportEntity);
+        System.out.println(list.isEmpty());
+        System.out.println(list);
+        if (!list.isEmpty()){
+            if (list.get(0)==null){
+                return null;
+            }
+        }else{
+            return null;
+        }
+        return list;
+    }
+
     /**
      * 自定义分页
      *
@@ -108,6 +158,49 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
         Integer count = clueReportDao.pagecount(dto);
         List<ClueReportEntity> list = clueReportDao.pagelist(dto);
         for (ClueReportEntity clueReportEntity : list) {
+
+            List<ImageClueReportEntity> imagesDao = this.getAttachmentsByIdType(clueReportEntity.getId(),ImageClueReportEntity.TYPE_IMAGE);
+
+            List<ImageClueReportEntity> audiosDao = this.getAttachmentsByIdType(clueReportEntity.getId(),ImageClueReportEntity.TYPE_AUDIO);
+
+            List<ImageClueReportEntity> videosDao = this.getAttachmentsByIdType(clueReportEntity.getId(),ImageClueReportEntity.TYPE_VIDEO);
+
+            if (imagesDao!=null) {
+                //图片
+                int size = imagesDao.size();
+                String[] imagesArr = new String[size];
+                for (int i = 0; i < size; i++) {
+                    ImageClueReportEntity  imageClueReportEntity = imagesDao.get(i);
+                    String url = imageClueReportEntity.getImageUrl();
+                    imagesArr[i] = FrameConstant.PREFIX_URL + url;
+                }
+                clueReportEntity.setImgApp(imagesArr);
+            }
+
+            if (audiosDao!=null) {
+                //语音
+                int size = audiosDao.size();
+                String[] audiosArr = new String[size];
+                for (int i = 0; i < size; i++) {
+                    ImageClueReportEntity  imageClueReportEntity = audiosDao.get(i);
+                    String url = imageClueReportEntity.getImageUrl();
+                    audiosArr[i] = FrameConstant.PREFIX_URL + url;
+                }
+                clueReportEntity.setAudioApp(audiosArr);
+            }
+
+            if (videosDao!=null) {
+                //视频
+                int size = videosDao.size();
+                String[] videosArr = new String[size];
+                for (int i = 0; i < size; i++) {
+                    ImageClueReportEntity  imageClueReportEntity = videosDao.get(i);
+                    String url = imageClueReportEntity.getImageUrl();
+                        videosArr[i] = FrameConstant.PREFIX_URL + url;
+                }
+                clueReportEntity.setVideoApp(videosArr);
+            }
+
             clueReportEntity.setReceiveId(clueFlowDao.getReceiveId(clueReportEntity.getId(), 1));
             clueReportEntity.setFlows(clueFlowDao.getAllFlows(clueReportEntity.getId()));
             SysUserEntity sysuser = sysUserService.searchDataById(clueReportEntity.getUserId());
@@ -340,7 +433,8 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
                     sum += 1;
                 }
             }
-            if (reportEntity.getReportRoleId() == 1002 && reportEntity.getReportIds().indexOf("11") == -1) {
+//            if (reportEntity.getReportRoleId() == 1002 && reportEntity.getReportIds().indexOf("11") == -1) {
+                if (reportEntity.getReportRoleId() == 1002 && reportEntity.getReportContents().indexOf("每周零报告")<0) {//去除零报告的情况
                 if (reportEntity.getState() == 0) {
                     unAccept += 1;
                 } else if (reportEntity.getState() == 3) {

@@ -36,6 +36,18 @@
                 </div>
               </div>
             </div>
+            <div class="col-xs-6 col-sm-4 col-lg-3">
+              <div class="form-group">
+                <label class="col-sm-4 control-label">是否城区</label>
+                <div class="col-sm-7">
+                  <select name="flag" class="form-control">
+                    <option value="">全部</option>
+                    <option value="1">是</option>
+                    <option value="0">否</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="text-center">
             <button id="btn-search-reportType" class="btn btn-primary"><i class="fa fa-search"></i> 查询
@@ -73,6 +85,9 @@
           </th>
           <th data-column-id="sortNo" data-order="desc" data-visible="true" data-sortable="true">
             编号
+          </th>
+          <th data-column-id="flag" data-order="desc" data-formatter="fun_name_flag" data-visible="true" data-sortable="true">
+            是否城区
           </th>
           <th data-column-id="state" data-order="desc" data-visible="true" data-sortable="true">
             状态
@@ -127,6 +142,12 @@
       </div>
     </div>
     <div class="form-group">
+      <label class="col-xs-4 control-label">是否城区：</label>
+      <div class="col-xs-8">
+        <div class="form-control-static">{{flag}}</div>
+      </div>
+    </div>
+    <div class="form-group">
       <label class="col-xs-4 control-label">顺序：</label>
       <div class="col-xs-8">
         <div class="form-control-static">{{sortNo}}</div>
@@ -165,6 +186,14 @@
             return "村（社）网格员";
           } else if (roleId === 1002) {
             return "纪检监察网格联络员";
+          }
+        },
+        "fun_name_flag": function (column, row) {
+          var flag = row.flag;
+          if (flag === 0) {
+            return "否";
+          } else if (flag === 1) {
+            return "是";
           }
         },
         "fun_date": function (rolumn, row) {

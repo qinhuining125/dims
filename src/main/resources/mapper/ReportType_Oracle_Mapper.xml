@@ -29,6 +29,9 @@
       <if test="sortNo !=null or sortNo ==0">
         and "SORT_NO" = #{sortNo,jdbcType=INTEGER}
       </if>
+      <if test="flag !=null">
+        and "FLAG" = #{flag,jdbcType=INTEGER}
+      </if>
       <if test="createTime !=null and createTime !=''">
         and "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
       </if>
@@ -41,13 +44,14 @@
     <result column="ROLE_ID" property="roleId" jdbcType="INTEGER"/>
     <result column="CONTENT" property="content" jdbcType="VARCHAR"/>
     <result column="SORT_NO" property="sortNo" jdbcType="INTEGER"/>
+    <result column="FLAG" property="flag" jdbcType="INTEGER"/>
     <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
     <result column="STATE" property="state" jdbcType="VARCHAR"/>
   </resultMap>
 
   <!-- 字段集合 -->
   <sql id="Base_Column_List">
-      "ID" , "ROLE_ID" , "CONTENT" , "SORT_NO" , "CREATE_TIME", "STATE"
+      "ID" , "ROLE_ID" , "CONTENT" , "SORT_NO" , "FLAG", "CREATE_TIME", "STATE"
   </sql>
 
   <!-- 根据主键查询 -->
@@ -135,7 +139,8 @@
 
   <!-- 添加 -->
   <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.ReportTypeEntity">
-    insert into "REPORT_TYPE" ("ID" , "ROLE_ID" , "CONTENT" , "SORT_NO" , "CREATE_TIME","STATE") values (#{id,jdbcType=INTEGER} , #{roleId,jdbcType=INTEGER} , #{content,jdbcType=VARCHAR} , #{sortNo,jdbcType=INTEGER} , #{createTime,jdbcType=TIMESTAMP}, #{state,jdbcType=VARCHAR})
+    insert into "REPORT_TYPE" ("ID" , "ROLE_ID" , "CONTENT" , "SORT_NO", "FLAG" , "CREATE_TIME","STATE")
+    values (#{id,jdbcType=INTEGER} , #{roleId,jdbcType=INTEGER} , #{content,jdbcType=VARCHAR} , #{sortNo,jdbcType=INTEGER} ,  #{flag,jdbcType=INTEGER} , #{createTime,jdbcType=TIMESTAMP}, #{state,jdbcType=VARCHAR})
   </insert>
 
   <!-- 选择性添加 -->
@@ -154,6 +159,12 @@
       <if test="sortNo != null or sortNo == 0">
         "SORT_NO",
       </if>
+      <if test="flag != null">
+        "FLAG",
+      </if>
+      <if test="state != null and state !=''">
+        "STATE",
+      </if>
       <if test="createTime != null">
         "CREATE_TIME",
       </if>
@@ -171,6 +182,12 @@
       <if test="sortNo != null or sortNo == 0">
         #{sortNo,jdbcType=INTEGER},
       </if>
+      <if test="flag != null">
+        #{flag,jdbcType=INTEGER},
+      </if>
+      <if test="state != null and state !=''">
+        #{state,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
       </if>
@@ -182,7 +199,9 @@
   <update id="updateByPrimaryKey"
     parameterType="com.hengtianyi.dims.service.entity.ReportTypeEntity">
     update "REPORT_TYPE" set
-      "ROLE_ID" = #{roleId,jdbcType=INTEGER} , "CONTENT" = #{content,jdbcType=VARCHAR} , "SORT_NO" = #{sortNo,jdbcType=INTEGER} , "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP} , "STATE" = #{state,jdbcType=VARCHAR}
+      "ROLE_ID" = #{roleId,jdbcType=INTEGER} , "CONTENT" = #{content,jdbcType=VARCHAR} , "SORT_NO" = #{sortNo,jdbcType=INTEGER} ,
+       "FLAG" = #{flag,jdbcType=INTEGER} ,
+       "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP} , "STATE" = #{state,jdbcType=VARCHAR}
     where "ID" = #{id,jdbcType=INTEGER}
   </update>
 
@@ -199,6 +218,9 @@
       </if>
       <if test="sortNo != null or sortNo == 0">
         "SORT_NO" = #{sortNo,jdbcType=INTEGER},
+      </if>
+      <if test="flag != null">
+        "FLAG" = #{flag,jdbcType=INTEGER},
       </if>
       <if test="createTime != null">
         "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP},

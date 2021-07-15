@@ -101,5 +101,9 @@ public interface SysUserService extends AbstractGenericService<SysUserEntity, St
    * @return list
    */
   List<SysUserEntity> nonGrid();
+
+
+  Integer checkUserIsChengQu(String userId);
+
 }
 

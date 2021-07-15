@@ -152,8 +152,10 @@ public class SysUserServiceImpl extends AbstractGenericServiceImpl<SysUserEntity
       throw new WebException(ErrorEnum.USER_DISABLED);
     }
     //网格员或联络员无登录权限
-    if (entity.getRoleId() <= 1002) {
-      throw new WebException("网格员或联络员暂不开放登录");
+    if (entity.getRoleId() <= 1002 ||  entity.getRoleId() == 1012
+            ||  (entity.getRoleId()>=3000 && entity.getRoleId()<=3999)
+    ) {
+      throw new WebException("网格员或联络员或村干部或乡镇站所暂不开放登录");
     }
     // 验证成功，写入登录时间
     long now = SystemClock.now();
@@ -388,6 +390,17 @@ public class SysUserServiceImpl extends AbstractGenericServiceImpl<SysUserEntity
   @Override
   public List<SysUserEntity> nonGrid() {
     return sysUserDao.nonGrid();
+  }
+
+  @Override
+  public Integer checkUserIsChengQu(String userId) {
+    Integer result;
+    SysUserEntity userEntity = this.searchDataById(userId);
+    boolean flag = userEntity.getAreaCode() != null && userEntity.getAreaCode().substring(0, 9).equals("140725701");
+
+    result=flag? 1:0;
+
+    return result;
   }
 
 }

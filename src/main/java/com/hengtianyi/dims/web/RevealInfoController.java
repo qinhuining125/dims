@@ -96,7 +96,7 @@ public class RevealInfoController extends AbstractBaseController<RevealInfoEntit
     RoleEnum[] roleEnums = RoleEnum.values();
     List<KeyValueDto> roleList = new ArrayList<>();
     for (RoleEnum roleEnum : roleEnums) {
-      if(roleEnum.getRoleId()> 1008 && roleEnum.getRoleId()< 2000){//巡察一组，巡察二组，巡察三组
+      if(roleEnum.getRoleId()==1009||roleEnum.getRoleId()==1010||roleEnum.getRoleId()==1011){//巡察一组，巡察二组，巡察三组
         roleList.add(new KeyValueDto(roleEnum.getRoleId().toString(), roleEnum.getName()));
       }
     }

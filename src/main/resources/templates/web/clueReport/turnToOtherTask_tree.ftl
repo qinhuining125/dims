@@ -10,7 +10,15 @@
         <div class="col-xs-12">
           <div class="form-group">
             <input type="hidden" value="${(uid)!}" name="uid"/>
-            <label class="col-xs-3 control-label">已转办</label>
+            <label class="col-xs-3 control-label">转办给：</label>
+            <div class="col-xs-9">
+              <select name="roleId" class="form-control">
+                <option value="">--请选择--</option>
+                <#list roleList as role>
+                  <option value="${(role.key)!}">${(role.value)!}</option>
+                </#list>
+              </select>
+            </div>
           </div>
         </div>
       </form>

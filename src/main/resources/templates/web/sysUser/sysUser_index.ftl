@@ -49,6 +49,15 @@
                     <option value="1009">巡察一组</option>
                     <option value="1010">巡察二组</option>
                     <option value="1011">巡察三组</option>
+                    <option value="1012">村干部</option>
+                    <option value="3010">农经站</option>
+                    <option value="3020">林业站</option>
+                    <option value="3030">环卫站</option>
+                    <option value="3040">安监站</option>
+                    <option value="3050">民政办</option>
+                    <option value="3060">国土所</option>
+                    <option value="3070">派出所</option>
+                    <option value="3999">其他</option>
                   </select>
                 </div>
               </div>
@@ -248,7 +257,16 @@
           {{#ifEqual roleId 1009}}巡察一组{{/ifEqual}}
           {{#ifEqual roleId 1010}}巡察二组{{/ifEqual}}
           {{#ifEqual roleId 1011}}巡察三组{{/ifEqual}}
+          {{#ifEqual roleId 1012}}村干部{{/ifEqual}}
           {{#ifEqual roleId 2000}}群众{{/ifEqual}}
+          {{#ifEqual roleId 3010}}农经站{{/ifEqual}}
+          {{#ifEqual roleId 3020}}林业站{{/ifEqual}}
+          {{#ifEqual roleId 3030}}环卫站{{/ifEqual}}
+          {{#ifEqual roleId 3040}}安监站{{/ifEqual}}
+          {{#ifEqual roleId 3050}}民政办{{/ifEqual}}
+          {{#ifEqual roleId 3060}}国土所{{/ifEqual}}
+          {{#ifEqual roleId 3070}}派出所{{/ifEqual}}
+          {{#ifEqual roleId 3999}}其他{{/ifEqual}}
         </div>
       </div>
     </div>
@@ -310,6 +328,24 @@
             return "巡察二组";
           } else if (roleId === 1011) {
             return "巡察三组";
+          } else if (roleId === 1012) {
+            return "村干部";
+          } else if (roleId === 3010) {
+            return "农经站";
+          } else if (roleId === 3020) {
+            return "林业站";
+          } else if (roleId === 3030) {
+            return "环卫站";
+          } else if (roleId === 3040) {
+            return "安监站";
+          } else if (roleId === 3050) {
+            return "民政办";
+          } else if (roleId === 3060) {
+            return "国土所";
+          } else if (roleId === 3070) {
+            return "派出所";
+          } else if (roleId === 3999) {
+            return "其他";
           }
         },
 

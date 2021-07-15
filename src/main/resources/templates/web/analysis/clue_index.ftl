@@ -46,8 +46,8 @@
                 <div class="col-sm-7">
                   <select name="reportRoleId" class="form-control">
                     <option value="">全部</option>
-                    <option value="1001">网格员</option>
-                    <option value="1002">联络员</option>
+                    <option value="1001">村（社）网格员</option>
+                    <option value="1002">纪检监察网格联络员</option>
                   </select>
                 </div>
               </div>
@@ -72,8 +72,8 @@
                 <div class="col-sm-7">
                   <select name="reportIds1" id="reportIds1" class="form-control">
                     <option value="">全部</option>
-                    <#list reportTypeList1 as obj>
-                      <option value="${(obj.sortNo)!}">${(obj.content)!}</option>
+                    <#list reportTypeList1 as obj1>
+                      <option value="${(obj1.sortNo)!}">${(obj1.content)!}</option>
                     </#list>
                   </select>
                 </div>
@@ -85,8 +85,8 @@
                 <div class="col-sm-7">
                   <select name="reportIds2" id="reportIds2" class="form-control">
                     <option value="">全部</option>
-                    <#list reportTypeList2 as obj>
-                      <option value="${(obj.sortNo)!}">${(obj.content)!}</option>
+                    <#list reportTypeList2 as obj2>
+                      <option value="${(obj2.sortNo)!}">${(obj2.content)!}</option>
                     </#list>
                   </select>
                 </div>

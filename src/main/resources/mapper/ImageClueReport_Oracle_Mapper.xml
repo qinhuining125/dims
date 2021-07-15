@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+ Oracle
+ table name  IMAGE_CLUE_REPORT
+ remarks     
+ author      LY
+-->
+<mapper namespace="com.hengtianyi.dims.service.dao.ImageClueReportDao">
+
+
+  <!-- doc 查询条件，根据实际情况，对where条件进行删减 -->
+  <sql id="sql_where">
+    <where>
+      <if test="id !=null and id !=''">
+        and "ID" = #{id,jdbcType=CHAR}
+      </if>
+      <if test="imageUrl !=null and imageUrl !=''">
+        and "IMAGE_URL" = #{imageUrl,jdbcType=CHAR}
+      </if>
+      <if test="type !=null and type !=0 and type !=''">
+        and "TYPE" = #{type,jdbcType=INTEGER}
+      </if>
+
+      <if test="clueId !=null and clueId !=''">
+        and "CLUE_ID" = #{clueId,jdbcType=DECIMAL}
+      </if>
+      <if test="createTime !=null and createTime !=''">
+        and "CREATE_TIME" = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 字段与实体的映射 -->
+  <resultMap id="BaseResultMap" type="com.hengtianyi.dims.service.entity.ImageClueReportEntity">
+    <id column="ID" property="id" jdbcType="CHAR"/>
+    <result column="IMAGE_URL" property="imageUrl" jdbcType="VARCHAR"/>
+    <result column="TYPE" property="type" jdbcType="INTEGER"/>
+    <result column="CLUE_ID" property="clueId" jdbcType="CHAR"/>
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <!-- 字段集合 -->
+  <sql id="Base_Column_List">
+      "ID" , "IMAGE_URL" , "TYPE", "CLUE_ID" , "CREATE_TIME"
+  </sql>
+
+  <!-- 根据主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from "IMAGE_CLUE_REPORT" where "ID" = #{Id,jdbcType=CHAR}
+  </select>
+
+  <!-- 根据条件查询，总数 -->
+  <select id="searchDataCount" resultType="java.lang.Integer"
+    parameterType="com.hengtianyi.dims.service.entity.ImageClueReportEntity">
+    select count(1) from "IMAGE_CLUE_REPORT"
+    <include refid="sql_where"/>
+  </select>
+
+
+  <!-- 根据条件查询，全部 -->
+  <select id="searchAllData" resultMap="BaseResultMap"
+    parameterType="com.hengtianyi.dims.service.entity.ImageClueReportEntity">
+    select
+    IMAGE_URL,TYPE
+    from "IMAGE_CLUE_REPORT"
+    <include refid="sql_where"/>
+    <if test="orderSql !='' ">
+      order by ${orderSql}
+    </if>
+  </select>
+
+
+  <!-- 通过id删除 -->
+  <delete id="deleteByClueIds" parameterType="java.util.List">
+    delete from "IMAGE_CLUE_REPORT" where "CLUE_ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+  <!-- 多条删除 -->
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from "IMAGE_CLUE_REPORT" where "CLUE_ID" in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+
+
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.hengtianyi.dims.service.entity.ImageClueReportEntity">
+    insert into "IMAGE_CLUE_REPORT" ("ID" , "IMAGE_URL", "TYPE" , "CLUE_ID"  , "CREATE_TIME" )
+    values (#{id,jdbcType=CHAR} , #{imageUrl,jdbcType=VARCHAR} , #{type,jdbcType=INTEGER} , #{clueId,jdbcType=CHAR} ,  #{createTime,jdbcType=TIMESTAMP} )
+  </insert>
+
+  <select id="getAllImages" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select t."IMAGE_URL", t."TYPE", t."CLUE_ID", t."CREATE_TIME"
+    from "IMAGE_CLUE_REPORT" t
+    where t."CLUE_ID"=#{clueId,jdbcType=CHAR}
+    order by t."CREATE_TIME" asc
+  </select>
+
+</mapper>

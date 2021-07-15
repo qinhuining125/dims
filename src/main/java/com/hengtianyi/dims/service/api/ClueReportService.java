@@ -5,6 +5,10 @@ import com.hengtianyi.common.core.base.CommonPageDto;
 import com.hengtianyi.common.core.base.service.AbstractGenericService;
 import com.hengtianyi.dims.service.dto.QueryDto;
 import com.hengtianyi.dims.service.entity.ClueReportEntity;
+import com.hengtianyi.dims.service.entity.ImageClueReportEntity;
+import com.hengtianyi.dims.service.entity.TaskImageEntity;
+
+import java.util.List;
 
 /**
  * ClueReport接口类
@@ -20,6 +24,12 @@ public interface ClueReportService extends AbstractGenericService<ClueReportEnti
      * @return
      */
     CommonEntityDto<ClueReportEntity> pagelist(QueryDto dto);
+
+
+    List<ImageClueReportEntity> getImages(String id);
+
+
+    List<ImageClueReportEntity> getAttachmentsByIdType(String id, int type);
 
     /**
      * 原分页
