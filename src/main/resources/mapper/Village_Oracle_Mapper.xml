@@ -18,7 +18,7 @@
       </if>
       <if test="sortNo !=null and sortNo !=''">
         and "SORT_NO" = #{sortNo,jdbcType=DECIMAL}
-      </if>townChilds
+      </if>
       <if test="areaName !=null and areaName !=''">
         and "AREA_NAME" like ('%' ||
         replace(replace(#{areaName,jdbcType=VARCHAR},'%','\%'),'_','\_') || '%') escape '\'
