@@ -63,7 +63,7 @@
         "done": function (value, startDate, endDate) {
             if (value) {
                 $("#startTime").val(+new Date(startDate.year, startDate.month - 1, startDate.date));
-                $("#endTime").val(+new Date(endDate.year, endDate.month - 1, endDate.date + 1));
+                $("#endTime").val(+new Date(endDate.year, endDate.month - 1, endDate.date));
             } else {
                 $("#startTime").val("");
                 $("#endTime").val("");
