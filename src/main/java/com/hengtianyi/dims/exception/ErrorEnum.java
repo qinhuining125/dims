@@ -41,6 +41,14 @@ public enum ErrorEnum {
    * 密码不能为空
    */
   PASSWORD_REQUIRED("1106", "密码不能为空"),
+  /**
+   * 验证码不能为空
+   */
+  VERIFYNONULL_INVALID("1107", "验证码不能为空错误"),
+  /**
+   * 验证码错误
+   */
+  VERIFY_INVALID("1108", "验证码错误"),
 
   /**
    * 授权出错

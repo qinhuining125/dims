@@ -17,6 +17,7 @@ import com.hengtianyi.dims.service.api.TownshipService;
 import com.hengtianyi.dims.service.dto.QueryDto;
 import com.hengtianyi.dims.service.entity.SysUserEntity;
 import com.hengtianyi.dims.service.entity.TownshipEntity;
+import com.hengtianyi.dims.utils.CodeUtil;
 import com.hengtianyi.dims.utils.WebUtil;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,9 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -96,6 +100,14 @@ public class IndexController {
       @RequestParam(value = "code", required = false) String code) {
     String errorMsg;
     try {
+      HttpSession session = request.getSession();
+      String random = (String) session.getAttribute("RANDOMVALIDATECODEKEY");
+      if (code==null){
+        throw new WebException(ErrorEnum.VERIFYNONULL_INVALID);
+      }
+      if (!random.equals(code)){
+        throw new WebException(ErrorEnum.VERIFY_INVALID);
+      }
       if (StringUtil.isBlank(password)) {
         throw new WebException(ErrorEnum.NO_PASSWORD);
       }
@@ -171,5 +183,22 @@ public class IndexController {
     request.getSession().invalidate();
     return "redirect:/login.html";
   }
-
+  /**
+   * 获取图片验证码
+   * @param request
+   * @param response
+   */
+  @GetMapping(value = "getVerify")
+  public void getVerify(HttpServletRequest request, HttpServletResponse response) {
+    try {
+      response.setContentType("image/jpeg");//设置相应类型,告诉浏览器输出的内容为图片
+      response.setHeader("Pragma", "No-cache");//设置响应头信息，告诉浏览器不要缓存此内容
+      response.setHeader("Cache-Control", "no-cache");
+      response.setDateHeader("Expire", 0);
+      CodeUtil randomValidateCode = new CodeUtil();
+      randomValidateCode.getRandcode(request, response);//输出验证码图片方法
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+  }
 }

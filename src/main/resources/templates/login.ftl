@@ -110,6 +110,26 @@
               </div>
             </div>
           </div>
+          <div class="o-block__cell">
+            <div class=" u-width-100p">
+              <div class="c-control__input-box">
+                <label for="username">验证码</label>
+                <input class="c-control__input code_text" type="text" name="code" id="code"
+                       placeholder="验证码" autocomplete="off"/>
+                <div class="img" style=" cursor:pointer">
+                  <a href="javascript:changeImg();" rel="external nofollow" title="点击更换验证码">
+                    <img id="img" src="/getVerify" alt="验证码"/>
+                  </a>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <script>
+            function changeImg() {
+              document.getElementById("img").src = "/getVerify?r=" + Math.random();
+            }
+          </script>
             <#if captchaShow>
             <#--<div class="code">-->
             <#--<input class="c-control__input code_text" type="text" name="code" id="code"-->
