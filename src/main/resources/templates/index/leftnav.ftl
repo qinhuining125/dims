@@ -11,7 +11,7 @@
               <#--<img src="${global.staticPath!}static/img/logos/logo.png"
                    style="border-radius:50%;height:125px;margin-bottom:5px">-->
             <br>
-            <a href="#">纪检监察管理系统</a>
+            <a href="#">廉润寿川管理系统</a>
           </div>
         </div>
         <div class="logo-element">
@@ -30,7 +30,7 @@
           </li>
         </#if>
       <li>
-        <a href="#"><i class="fa fa-edit"></i><span class="nav-label">纪检监察管理</span>
+        <a href="#"><i class="fa fa-edit"></i><span class="nav-label">廉润寿川管理</span>
           <span class="fa arrow"></span></a>
         <ul class="nav nav-second-level">
           <li><a class="J_menuItem" href="/a/incorruptAdvice/index.html">廉政建议</a></li>

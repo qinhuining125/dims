@@ -19,7 +19,7 @@
                   <select name="roleId" class="form-control">
                     <option value="">全部</option>
                     <option value="1001">村（社）网格员</option>
-                    <option value="1002">纪检监察网格联络员</option>
+                    <option value="1002">廉润寿川网格联络员</option>
                   </select>
                 </div>
               </div>
@@ -125,7 +125,7 @@
       <div class="col-xs-8">
         <div class="form-control-static">
           {{#ifEqual roleId 1001}}村（社）网格员{{/ifEqual}}
-          {{#ifEqual roleId 1002}}纪检监察网格联络员{{/ifEqual}}
+          {{#ifEqual roleId 1002}}廉润寿川网格联络员{{/ifEqual}}
         </div>
       </div>
     </div>
@@ -185,7 +185,7 @@
           if (roleId === 1001) {
             return "村（社）网格员";
           } else if (roleId === 1002) {
-            return "纪检监察网格联络员";
+            return "廉润寿川网格联络员";
           }
         },
         "fun_name_flag": function (column, row) {

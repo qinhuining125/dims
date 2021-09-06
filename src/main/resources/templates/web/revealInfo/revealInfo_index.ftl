@@ -174,7 +174,7 @@
       <div class="col-xs-8">
         <div class="form-control-static">
           {{#ifEqual roleId 1001}}村（社）网格员{{/ifEqual}}
-          {{#ifEqual roleId 1002}}纪检监察网格联络员{{/ifEqual}}
+          {{#ifEqual roleId 1002}}廉润寿川网格联络员{{/ifEqual}}
           {{#ifEqual roleId 1003}}乡镇纪委管理员{{/ifEqual}}
           {{#ifEqual roleId 1004}}县纪委联系室/巡察办{{/ifEqual}}
           {{#ifEqual roleId 1005}}分管领导{{/ifEqual}}

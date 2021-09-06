@@ -47,7 +47,7 @@
                   <select name="reportRoleId" class="form-control">
                     <option value="">全部</option>
                     <option value="1001">村（社）网格员</option>
-                    <option value="1002">纪检监察网格联络员</option>
+                    <option value="1002">廉润寿川网格联络员</option>
                   </select>
                 </div>
               </div>

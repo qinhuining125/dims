@@ -14,7 +14,7 @@
   <version>1.0.0</version>
   <packaging>war</packaging>
   <name>DIMS</name>
-  <description>纪检监察管理</description>
+  <description>廉润寿川管理</description>
 
   <!-- 项目的核心开发者信息 -->
   <developers>
