@@ -41,7 +41,7 @@
                     <option value="1001">村（社）网格员</option>
                     <option value="1002">廉润寿川网格联络员</option>
                     <option value="1003">乡镇纪委管理员</option>
-                    <option value="1004">县纪委联系室/巡察办</option>
+                    <option value="1004">县信访室</option>
                     <option value="1005">分管领导</option>
                     <option value="1006">县级领导班子</option>
                     <option value="1007">超级管理员</option>
@@ -49,14 +49,16 @@
                     <option value="1009">巡察一组</option>
                     <option value="1010">巡察二组</option>
                     <option value="1011">巡察三组</option>
-                    <option value="1012">村干部</option>
-                    <option value="3010">农经站</option>
+                    <option value="1012">村干部/社区书记</option>
+                    <option value="3010">乡镇农经站/城区财务</option>
                     <option value="3020">林业站</option>
                     <option value="3030">环卫站</option>
-                    <option value="3040">安监站</option>
+                    <option value="3040">安监站/安全站</option>
                     <option value="3050">民政办</option>
                     <option value="3060">国土所</option>
-                    <option value="3070">派出所</option>
+                    <option value="3070">派出所/城区片警</option>
+                    <option value="3080">综治信访</option>
+                    <option value="3090">党建</option>
                     <option value="3999">其他</option>
                   </select>
                 </div>
@@ -249,7 +251,7 @@
           {{#ifEqual roleId 1001}}村（社）网格员{{/ifEqual}}
           {{#ifEqual roleId 1002}}廉润寿川网格联络员{{/ifEqual}}
           {{#ifEqual roleId 1003}}乡镇纪委管理员{{/ifEqual}}
-          {{#ifEqual roleId 1004}}县纪委联系室/巡察办{{/ifEqual}}
+          {{#ifEqual roleId 1004}}县信访室{{/ifEqual}}
           {{#ifEqual roleId 1005}}分管领导{{/ifEqual}}
           {{#ifEqual roleId 1006}}县级领导班子{{/ifEqual}}
           {{#ifEqual roleId 1007}}超级管理员{{/ifEqual}}
@@ -257,15 +259,17 @@
           {{#ifEqual roleId 1009}}巡察一组{{/ifEqual}}
           {{#ifEqual roleId 1010}}巡察二组{{/ifEqual}}
           {{#ifEqual roleId 1011}}巡察三组{{/ifEqual}}
-          {{#ifEqual roleId 1012}}村干部{{/ifEqual}}
+          {{#ifEqual roleId 1012}}村干部/社区书记{{/ifEqual}}
           {{#ifEqual roleId 2000}}群众{{/ifEqual}}
-          {{#ifEqual roleId 3010}}农经站{{/ifEqual}}
+          {{#ifEqual roleId 3010}}乡镇农经站/城区财务{{/ifEqual}}
           {{#ifEqual roleId 3020}}林业站{{/ifEqual}}
           {{#ifEqual roleId 3030}}环卫站{{/ifEqual}}
-          {{#ifEqual roleId 3040}}安监站{{/ifEqual}}
+          {{#ifEqual roleId 3040}}安监站/安全站{{/ifEqual}}
           {{#ifEqual roleId 3050}}民政办{{/ifEqual}}
           {{#ifEqual roleId 3060}}国土所{{/ifEqual}}
-          {{#ifEqual roleId 3070}}派出所{{/ifEqual}}
+          {{#ifEqual roleId 3070}}派出所/城区片警{{/ifEqual}}
+          {{#ifEqual roleId 3080}}综治信访{{/ifEqual}}
+          {{#ifEqual roleId 3090}}党建{{/ifEqual}}
           {{#ifEqual roleId 3999}}其他{{/ifEqual}}
         </div>
       </div>
@@ -313,7 +317,7 @@
           } else if (roleId === 1003) {
             return "乡镇纪委管理员";
           } else if (roleId === 1004) {
-            return "县纪委联系室";
+            return "县信访室";
           } else if (roleId === 1005) {
             return "分管领导";
           } else if (roleId === 1006) {
@@ -329,21 +333,25 @@
           } else if (roleId === 1011) {
             return "巡察三组";
           } else if (roleId === 1012) {
-            return "村干部";
+            return "村干部/社区书记";
           } else if (roleId === 3010) {
-            return "农经站";
+            return "乡镇农经站/城区财务";
           } else if (roleId === 3020) {
             return "林业站";
           } else if (roleId === 3030) {
             return "环卫站";
           } else if (roleId === 3040) {
-            return "安监站";
+            return "安监站/安全站";
           } else if (roleId === 3050) {
             return "民政办";
           } else if (roleId === 3060) {
             return "国土所";
           } else if (roleId === 3070) {
-            return "派出所";
+            return "派出所/城区片警";
+          } else if (roleId === 3080) {
+            return "综治信访";
+          } else if (roleId === 3090) {
+            return "党建";
           } else if (roleId === 3999) {
             return "其他";
           }

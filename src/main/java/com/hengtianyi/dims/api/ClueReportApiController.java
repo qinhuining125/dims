@@ -118,12 +118,17 @@ public class ClueReportApiController {
         //上级管理员
         SysUserEntity adminUser;
 
-        boolean flag = entity.getToVillageMgr()!= null && entity.getToVillageMgr().equals("上报给村干部");
-        if(flag){
-          //村干部
+        //判断是否为空
+        boolean flag = entity.getToVillageMgr()!= null && entity.getToVillageMgr().equals("") ;
+
+        ;
+        if(entity.getToVillageMgr().equals("上报给村干部/社区书记")){//上报给村干部/社区书记
           adminUser = sysUserService
                   .superiorUser(userEntity.getAreaCode().substring(0, 12),1012);
-        }else {
+        } else if(entity.getToVillageMgr().equals("上报给县信访室")){
+          adminUser = sysUserService
+                  .superiorUser(userEntity.getAreaCode().substring(0, 6),1004);
+        } else {//上报给乡镇纪委管理员
           adminUser = sysUserService
                   .superiorUser(userEntity.getAreaCode().substring(0, 9),1003);
         }
@@ -322,7 +327,7 @@ public class ClueReportApiController {
         adminUser = sysUserService
                 .superiorUser(u.getAreaCode().substring(0, 12), 1012);
       } else {
-        //乡镇站所
+        //乡镇站所或者乡镇纪委管理员
         adminUser = sysUserService
                 .superiorUser(u.getAreaCode().substring(0, 9), roleId);
       }
@@ -459,7 +464,7 @@ public class ClueReportApiController {
             roleList.add(new KeyValueDto(roleEnum.getRoleId().toString(), roleEnum.getName()));
           }
         }
-      }else if(type==1){//当前登录系统的用户是1012，村干部，村干部进行转办的话，只能选择到乡镇纪委管理员和站所
+      }else if(type==1){//当前登录系统的用户是1012或者1004县纪委联系室，村干部，村干部进行转办的话，只能选择到乡镇纪委管理员和站所
         for (RoleEnum roleEnum : roleEnums) {
           if(roleEnum.getRoleId()==1003 ||  (roleEnum.getRoleId()>=3000 && roleEnum.getRoleId()<=3999)
           ){//乡镇纪委管理员，村干部，以及所有的站所

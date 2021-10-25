@@ -51,7 +51,7 @@ public class ClueReportEntity extends BaseEntity {
   private String clueDescribe;
 
   /**
-   * 上报给村干部
+   * 上报给村干部/社区书记 和 上报给 县信访室公用一个字段存储
    */
   private String toVillageMgr;
 
