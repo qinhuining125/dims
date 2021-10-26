@@ -434,15 +434,28 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
     if (StringUtil.isBlank(uid)) {
       throw new WebException(ErrorEnum.AUTHORIZE_PARAMETER);
     }
+    SysUserEntity u = WebUtil.getUser();
+    int userRoleId = u.getRoleId();
     RoleEnum[] roleEnums = RoleEnum.values();
     List<KeyValueDto> roleList = new ArrayList<>();
-    for (RoleEnum roleEnum : roleEnums) {
-      if(roleEnum.getRoleId()==1012
-              || (roleEnum.getRoleId()>=3000 && roleEnum.getRoleId()<=3999)
-      ){//村干部，所有站所
-        roleList.add(new KeyValueDto(roleEnum.getRoleId().toString(), roleEnum.getName()));
+    if(userRoleId==1004){
+      for (RoleEnum roleEnum : roleEnums) {
+        if(roleEnum.getRoleId()==1003
+                || (roleEnum.getRoleId()>=3000 && roleEnum.getRoleId()<=3999)
+        ){//县信访室可以转办给 乡镇纪委管理员 或者站所
+          roleList.add(new KeyValueDto(roleEnum.getRoleId().toString(), roleEnum.getName()));
+        }
+      }
+    }else{
+      for (RoleEnum roleEnum : roleEnums) {
+        if(roleEnum.getRoleId()==1012
+                || (roleEnum.getRoleId()>=3000 && roleEnum.getRoleId()<=3999)
+        ){//村干部，所有站所
+          roleList.add(new KeyValueDto(roleEnum.getRoleId().toString(), roleEnum.getName()));
+        }
       }
     }
+
     // 全部的角色数据
     model.addAttribute("roleList", roleList);
     model.addAttribute("uid", uid);
