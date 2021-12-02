@@ -120,13 +120,18 @@ public class ClueReportApiController {
 
         //判断是否为空
         boolean flag = entity.getToVillageMgr()!= null && entity.getToVillageMgr().equals("") ;
-        if(entity.getToVillageMgr().equals("上报给村干部/社区书记")){//上报给村干部/社区书记
-          adminUser = sysUserService
-                  .superiorUser(userEntity.getAreaCode().substring(0, 12),1012);
-        } else if(entity.getToVillageMgr().equals("上报给县信访室")){
-          adminUser = sysUserService
-                  .superiorUser(userEntity.getAreaCode().substring(0, 6),1004);
-        } else {//上报给乡镇纪委管理员
+        if(flag){
+          if(entity.getToVillageMgr().equals("上报给村干部/社区书记")){//上报给村干部/社区书记
+            adminUser = sysUserService
+                    .superiorUser(userEntity.getAreaCode().substring(0, 12),1012);
+          } else if(entity.getToVillageMgr().equals("上报给县信访室")){
+            adminUser = sysUserService
+                    .superiorUser(userEntity.getAreaCode().substring(0, 6),1004);
+          }else {//上报给乡镇纪委管理员
+            adminUser = sysUserService
+                    .superiorUser(userEntity.getAreaCode().substring(0, 9),1003);
+          }
+        }else {//上报给乡镇纪委管理员
           adminUser = sysUserService
                   .superiorUser(userEntity.getAreaCode().substring(0, 9),1003);
         }
