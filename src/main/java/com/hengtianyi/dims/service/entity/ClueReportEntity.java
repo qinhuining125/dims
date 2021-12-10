@@ -104,7 +104,19 @@ public class ClueReportEntity extends BaseEntity {
   //新指派（转办）给的人的角色
   private int roleId;
 
+  private Integer receivedRoleId;
 
+  private String receivedUserId;
+
+  private String receivedUserName;
+
+  private String receivedUserAccount;
+
+  private String receivedAreaCode;
+
+  private Date receivedTime;
+
+  private SysUserEntity receivedUser;
 
   /**
    * 图片
@@ -414,6 +426,63 @@ public class ClueReportEntity extends BaseEntity {
 
   public void setDtoList(List<KeyValueDto> dtoList) {
     this.dtoList = dtoList;
+  }
+
+
+  public Integer getReceivedRoleId() {
+    return receivedRoleId;
+  }
+
+  public void setReceivedRoleId(Integer receivedRoleId) {
+    this.receivedRoleId = receivedRoleId;
+  }
+
+  public String getReceivedUserId() {
+    return receivedUserId;
+  }
+
+  public void setReceivedUserId(String receivedUserId) {
+    this.receivedUserId = receivedUserId;
+  }
+
+  public String getReceivedUserName() {
+    return receivedUserName;
+  }
+
+  public void setReceivedUserName(String receivedUserName) {
+    this.receivedUserName = receivedUserName;
+  }
+
+  public String getReceivedUserAccount() {
+    return receivedUserAccount;
+  }
+
+  public void setReceivedUserAccount(String receivedUserAccount) {
+    this.receivedUserAccount = receivedUserAccount;
+  }
+
+  public String getReceivedAreaCode() {
+    return receivedAreaCode;
+  }
+
+  public void setReceivedAreaCode(String receivedAreaCode) {
+    this.receivedAreaCode = receivedAreaCode;
+  }
+
+  public Date getReceivedTime() {
+    return receivedTime;
+  }
+
+  public void setReceivedTime(Date receivedTime) {
+    this.receivedTime = receivedTime;
+  }
+
+  public SysUserEntity getReceivedUser() {
+    return receivedUser;
+  }
+
+  public void setReceivedUser(SysUserEntity receivedUser) {
+    this.receivedUser = receivedUser;
   }
 
   @Override

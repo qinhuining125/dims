@@ -178,6 +178,7 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
         sb.append("[").append(dto.getReportIds2()).append("-").append(reportTypeDao.contentByRoleSortNo(1002, Integer.parseInt(dto.getReportIds2()))).append("]");
         queryDto.setReportContents2(sb.toString());
       }
+
       if (dto.getState() != null) {
         queryDto.setState(dto.getState().intValue());
       }
@@ -190,6 +191,8 @@ public class ClueReportController extends AbstractBaseController<ClueReportEntit
 
       queryDto.setAreaCode(dto.getAreaCode());
       queryDto.setReportRoleId(dto.getReportRoleId());
+      queryDto.setReceivedRoleId(null==dto.getReceivedRoleId() ? 0 : dto.getReceivedRoleId() );
+      queryDto.setReceivedUserName(null==dto.getReceivedUserName() ? "" : dto.getReceivedUserName());
 
       List<String> wgyContentsList = new ArrayList<>();
       List<String> llyContentsList = new ArrayList<>();

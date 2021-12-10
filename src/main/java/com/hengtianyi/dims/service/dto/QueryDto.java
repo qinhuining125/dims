@@ -2,6 +2,7 @@ package com.hengtianyi.dims.service.dto;
 
 import com.hengtianyi.common.core.base.BaseBean;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -84,6 +85,20 @@ public class QueryDto extends BaseBean {
   private List<String> wgyContentsList;
 
   private List<String> llyContentsList;
+
+
+
+  private Integer receivedRoleId;
+
+  private String receivedUserId;
+
+  private String receivedUserName;
+
+  private String receivedUserAccount;
+
+  private String receivedAreaCode;
+
+  private Date receivedTime;
 
 
   /**
@@ -233,5 +248,53 @@ public class QueryDto extends BaseBean {
 
   public void setReportRoleId(Integer reportRoleId) {
     this.reportRoleId = reportRoleId;
+  }
+
+  public Integer getReceivedRoleId() {
+    return receivedRoleId;
+  }
+
+  public void setReceivedRoleId(Integer receivedRoleId) {
+    this.receivedRoleId = receivedRoleId;
+  }
+
+  public String getReceivedUserId() {
+    return receivedUserId;
+  }
+
+  public void setReceivedUserId(String receivedUserId) {
+    this.receivedUserId = receivedUserId;
+  }
+
+  public String getReceivedUserName() {
+    return receivedUserName;
+  }
+
+  public void setReceivedUserName(String receivedUserName) {
+    this.receivedUserName = receivedUserName;
+  }
+
+  public String getReceivedUserAccount() {
+    return receivedUserAccount;
+  }
+
+  public void setReceivedUserAccount(String receivedUserAccount) {
+    this.receivedUserAccount = receivedUserAccount;
+  }
+
+  public String getReceivedAreaCode() {
+    return receivedAreaCode;
+  }
+
+  public void setReceivedAreaCode(String receivedAreaCode) {
+    this.receivedAreaCode = receivedAreaCode;
+  }
+
+  public Date getReceivedTime() {
+    return receivedTime;
+  }
+
+  public void setReceivedTime(Date receivedTime) {
+    this.receivedTime = receivedTime;
   }
 }

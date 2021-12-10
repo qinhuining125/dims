@@ -217,8 +217,17 @@
     select "RECEIVE_ID"
     from (select "RECEIVE_ID" from "CLUE_FLOW"
     where "CLUE_ID" = #{clueId,jdbcType=CHAR}
-    and "STATE" = #{state,jdbcType=INTEGER}
     order by "CREATE_TIME" desc)
+    where ROWNUM &lt;=1
+  </select>
+
+
+  <select id="getReceiveUser" resultType="com.hengtianyi.dims.service.entity.SysUserEntity">
+    select *
+    from (select u.* from "CLUE_FLOW" flow
+    left join SYS_USER u on flow.RECEIVE_ID=u.id
+    where flow."CLUE_ID" =  #{clueId,jdbcType=CHAR}
+    order by flow."CREATE_TIME" desc)
     where ROWNUM &lt;=1
   </select>
 </mapper>

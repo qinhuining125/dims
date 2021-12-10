@@ -50,7 +50,8 @@ public interface ClueReportDao extends AbstractGenericDao<ClueReportEntity, Stri
                                           @Param("reportContents") String reportContents,
                                           @Param("reportContents2") String reportContents2,
                                           @Param("wgyContentsList") List<String> wgyContentsList,
-                                          @Param("llyContentsList") List<String> llyContentsList);
+                                          @Param("llyContentsList") List<String> llyContentsList,
+                                          @Param("receivedRoleId") Integer receivedRoleId);
     /**
      * 查询所有的上报
      *
@@ -63,5 +64,6 @@ public interface ClueReportDao extends AbstractGenericDao<ClueReportEntity, Stri
                                                  @Param("endTime") String endTime,
                                                  @Param("areaCode") String areaCode,
                                                  @Param("roleId") String roleId,
-                                                 @Param("report0Wook") String report0Wook);
+                                                 @Param("report0Wook") String report0Wook,
+                                                 @Param("receivedRoleId") Integer receivedRoleId);
 }

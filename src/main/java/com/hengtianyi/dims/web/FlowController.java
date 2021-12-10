@@ -79,10 +79,12 @@ public class FlowController {
                            @RequestParam(required = false) String reportRoleId,
                            @RequestParam(required = false) String reportState,
                            @RequestParam(required = false) String reportIds1,
-                           @RequestParam(required = false) String reportIds2) {
+                           @RequestParam(required = false) String reportIds2,
+                           @RequestParam(required = false) Integer receivedRoleId) {
         String start = startTime != null ? TimeUtil.format(startTime, BaseConstant.DATE_FORMAT2) : "";
         String end = endTime != null ? TimeUtil.format(endTime, BaseConstant.DATE_FORMAT2) : "";
-        return clueReportService.echartsData(start, end, areaCode, reportRoleId, reportState, reportIds1, reportIds2);
+        Integer receivedRoleId2 = null==receivedRoleId ? 0 : receivedRoleId;
+        return clueReportService.echartsData(start, end, areaCode, reportRoleId, reportState, reportIds1, reportIds2,receivedRoleId2);
     }
 
     @GetMapping(value = "a/analysis/report0.html", produces = BaseConstant.HTML)
@@ -98,10 +100,12 @@ public class FlowController {
                               @RequestParam(required = false) String areaCode,
                               @RequestParam(required = false) String reportRoleId,
                               @RequestParam(required = false) String reportState,
-                              @RequestParam(required = false) String reportIds) {
+                              @RequestParam(required = false) String reportIds,
+                              @RequestParam(required = false) Integer receivedRoleId) {
         String start = startTime != null ? TimeUtil.format(startTime, BaseConstant.DATE_FORMAT2) : "";
         String end = endTime != null ? TimeUtil.format(endTime, BaseConstant.DATE_FORMAT2) : "";
-        return clueReportService.echartsReport0Data(start, end, areaCode, reportRoleId, reportState, reportIds);
+        Integer receivedRoleId2 = null==receivedRoleId ? 0 : receivedRoleId;
+        return clueReportService.echartsReport0Data(start, end, areaCode, reportRoleId, reportState, reportIds,receivedRoleId2);
     }
 
     @GetMapping(value = "a/analysis/advice.html", produces = BaseConstant.HTML)

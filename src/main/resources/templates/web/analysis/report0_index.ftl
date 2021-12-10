@@ -40,7 +40,35 @@
                 </div>
               </div>
             </div>
+
+            <div class="col-xs-6 col-sm-4 col-lg-3">
+              <div class="form-group">
+                <label class="col-sm-4 control-label">当前审批人角色类型：</label>
+                <div class="col-sm-7">
+                  <select name="receivedRoleId" id="receivedRoleId" class="form-control">
+                    <option value="0">全部</option>
+                    <option value="1003">乡镇纪委管理员</option>
+                    <option value="1004">县信访室</option>
+                    <option value="1012">村干部/社区书记</option>
+                    <option value="3010">乡镇农经站/城区财务</option>
+                    <option value="3020">林业站</option>
+                    <option value="3030">环卫站</option>
+                    <option value="3040">安监站/安全站</option>
+                    <option value="3050">民政办</option>
+                    <option value="3060">国土所</option>
+                    <option value="3070">派出所/城区片警</option>
+                    <option value="3080">综治信访</option>
+                    <option value="3090">党建</option>
+                    <option value="3999">其他</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
           </div>
+
+
+
           <div class="text-center">
             <button id="btn-cx" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;查询
             </button>

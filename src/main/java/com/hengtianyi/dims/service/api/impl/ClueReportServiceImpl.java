@@ -16,6 +16,7 @@ import com.hengtianyi.dims.service.entity.*;
 import java.util.*;
 import javax.annotation.Resource;
 
+import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -201,7 +202,7 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
                 clueReportEntity.setVideoApp(videosArr);
             }
 
-            clueReportEntity.setReceiveId(clueFlowDao.getReceiveId(clueReportEntity.getId(), 1));
+            clueReportEntity.setReceiveId(clueFlowDao.getReceiveId(clueReportEntity.getId(), 99));
             clueReportEntity.setFlows(clueFlowDao.getAllFlows(clueReportEntity.getId()));
             SysUserEntity sysuser = sysUserService.searchDataById(clueReportEntity.getUserId());
             TownshipEntity town = townshipDao.selectByAreaCode(sysuser.getAreaCode().substring(0, 9));
@@ -250,6 +251,15 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
                     dtoList.add(keyValueDto);
                 }
                 entity.setDtoList(dtoList);
+
+                SysUserEntity receivedU = clueFlowDao.getReceiveUser(entity.getId());
+
+                entity.setReceivedUser(receivedU);
+                entity.setReceiveId(receivedU.getId());
+                entity.setReceivedRoleId(receivedU.getRoleId());
+                entity.setReceivedUserAccount(receivedU.getUserAccount());
+                entity.setReceivedUserName(receivedU.getUserName());
+                entity.setReceivedAreaCode(receivedU.getAreaCode());
             }
             CommonPageDto cpDto = new CommonPageDto(listData);
             cpDto.setCurrent(dto.getCurrentPage());
@@ -282,7 +292,7 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
      * @return list
      */
     @Override
-    public String echartsData(String startTime, String endTime, String areaCode, String reportRoleId, String reportState, String reportIds1, String reportIds2) {
+    public String echartsData(String startTime, String endTime, String areaCode, String reportRoleId, String reportState, String reportIds1, String reportIds2,Integer receivedRoleId) {
         ServiceResult<Object> result = new ServiceResult();
         try {
             String reportIds = "";
@@ -319,8 +329,7 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
                 reportContents2 = sb.toString();
             }
             List<ClueReportEntity> reportList = clueReportDao
-                    .getEchartsData(startTime, endTime, areaCode, reportRoleId, reportState, reportIds, reportContents, reportContents2, wgyContentsList, llyContentsList);
-
+                    .getEchartsData(startTime, endTime, areaCode, reportRoleId, reportState, reportIds, reportContents, reportContents2, wgyContentsList, llyContentsList, receivedRoleId);
             Map<String, Object> map = count(reportList);
             List<String> wgynrsList = reportTypeDao.contentByRole(1001);
             List<String> llynrsList = reportTypeDao.contentByRole(1002);
@@ -380,7 +389,7 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
             String[] sums = new String[villageList.size()];
             for (int i = 0; i < villageList.size(); i++) {
                 VillageEntity village = villageList.get(i);
-                reportList = clueReportDao.getEchartsData(startTime, endTime, village.getAreaCode(), reportRoleId, reportState, reportIds, reportContents, reportContents2, wgyContentsList, llyContentsList);
+                reportList = clueReportDao.getEchartsData(startTime, endTime, village.getAreaCode(), reportRoleId, reportState, reportIds, reportContents, reportContents2, wgyContentsList, llyContentsList,receivedRoleId);
                 Map<String, Object> dataMap = count(reportList);
                 villageNames[i] = village.getAreaName();
                 unAccepts[i] = dataMap.get("unAccept").toString();
@@ -462,13 +471,13 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
     }
 
     @Override
-    public String echartsReport0Data(String startTime, String endTime, String areaCode, String reportRoleId, String reportState, String reportIds) {
+    public String echartsReport0Data(String startTime, String endTime, String areaCode, String reportRoleId, String reportState, String reportIds, Integer receivedRoleId) {
         ServiceResult<Object> result = new ServiceResult();
         try {
             String report0Wook = "11";
             String roleId = "1002";
             List<ClueReportEntity> reportList = clueReportDao
-                    .getEchartsReport0Data(startTime, endTime, areaCode, roleId, report0Wook);
+                    .getEchartsReport0Data(startTime, endTime, areaCode, roleId, report0Wook, receivedRoleId);
             Map<String, Object> map = countReport0(reportList);
 
             List<VillageEntity> villageList = villageDao.areaList(areaCode);
@@ -481,7 +490,7 @@ public class ClueReportServiceImpl extends AbstractGenericServiceImpl<ClueReport
             String[] sums = new String[villageList.size()];
             for (int i = 0; i < villageList.size(); i++) {
                 VillageEntity village = villageList.get(i);
-                reportList = clueReportDao.getEchartsReport0Data(startTime, endTime, village.getAreaCode(), roleId, report0Wook);
+                reportList = clueReportDao.getEchartsReport0Data(startTime, endTime, village.getAreaCode(), roleId, report0Wook, receivedRoleId);
                 Map<String, Object> dataMap = countReport0(reportList);
                 villageNames[i] = village.getAreaName();
                 unAccepts[i] = dataMap.get("unAccept").toString();

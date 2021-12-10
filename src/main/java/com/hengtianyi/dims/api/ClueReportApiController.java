@@ -119,9 +119,9 @@ public class ClueReportApiController {
         SysUserEntity adminUser;
 
         //判断是否为空
-        boolean flag = entity.getToVillageMgr()!= null && entity.getToVillageMgr().equals("") ;
+        boolean flag = entity.getToVillageMgr()!= null && !entity.getToVillageMgr().equals("") ;
         if(flag){
-          if(entity.getToVillageMgr().equals("上报给村干部/社区书记")){//上报给村干部/社区书记
+          if(entity.getToVillageMgr().startsWith("上报给村干部")){//上报给村干部/社区书记
             adminUser = sysUserService
                     .superiorUser(userEntity.getAreaCode().substring(0, 12),1012);
           } else if(entity.getToVillageMgr().equals("上报给县信访室")){

@@ -104,6 +104,9 @@ public class ClueReportDto extends BaseBean {
   //新指派（转办）给的人的角色
   private int roleId;
 
+  //处理人的角色
+  private int receivedRoleId;
+
   /**
    * 网格员上报类型ids
    */
@@ -330,5 +333,14 @@ public class ClueReportDto extends BaseBean {
 
   public void setVideoArray(List<String> videoArray) {
     this.videoArray = videoArray;
+  }
+
+
+  public int getReceivedRoleId() {
+    return receivedRoleId;
+  }
+
+  public void setReceivedRoleId(int receivedRoleId) {
+    this.receivedRoleId = receivedRoleId;
   }
 }

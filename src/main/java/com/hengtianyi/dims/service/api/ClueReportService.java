@@ -55,7 +55,7 @@ public interface ClueReportService extends AbstractGenericService<ClueReportEnti
      * @param areaCode  乡镇编号
      * @return json
      */
-    String echartsData(String startTime, String endTime, String areaCode, String reportRoleId, String reportState, String reportIds1,String reportIds2);
+    String echartsData(String startTime, String endTime, String areaCode, String reportRoleId, String reportState, String reportIds1,String reportIds2, Integer receivedRoleId);
     /**
      * echart 0数据
      *
@@ -64,6 +64,6 @@ public interface ClueReportService extends AbstractGenericService<ClueReportEnti
      * @param areaCode  乡镇编号
      * @return json
      */
-    String echartsReport0Data(String startTime, String endTime, String areaCode, String reportRoleId, String reportState, String reportIds);
+    String echartsReport0Data(String startTime, String endTime, String areaCode, String reportRoleId, String reportState, String reportIds, Integer receivedRoleId);
 
 }

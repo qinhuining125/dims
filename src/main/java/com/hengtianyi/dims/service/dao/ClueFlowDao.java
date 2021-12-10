@@ -3,6 +3,8 @@ package com.hengtianyi.dims.service.dao;
 import com.hengtianyi.common.core.base.service.AbstractGenericDao;
 import com.hengtianyi.dims.service.entity.ClueFlowEntity;
 import java.util.List;
+
+import com.hengtianyi.dims.service.entity.SysUserEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,4 +30,6 @@ public interface ClueFlowDao extends AbstractGenericDao<ClueFlowEntity, String> 
    * @return 接受人员
    */
   String getReceiveId(@Param("clueId") String clueId, @Param("state") Integer state);
+
+  SysUserEntity getReceiveUser(@Param("clueId") String clueId);
 }

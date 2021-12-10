@@ -66,6 +66,7 @@
               </div>
             </div>
           </div>
+
           <div class="row">
             <div class="col-xs-6 col-sm-4 col-lg-3">
               <div class="form-group">
@@ -117,6 +118,43 @@
               </div>
             </div>
           </div>
+
+
+
+          <div class="row">
+            <div class="col-xs-6 col-sm-4 col-lg-3">
+              <div class="form-group">
+                <label class="col-sm-4 control-label">当前当前审批人角色类型：</label>
+                <div class="col-sm-7">
+                  <select name="receivedRoleId" class="form-control">
+                    <option value="0">全部</option>
+                    <option value="1003">乡镇纪委管理员</option>
+                    <option value="1004">县信访室</option>
+                    <option value="1012">村干部/社区书记</option>
+                    <option value="3010">乡镇农经站/城区财务</option>
+                    <option value="3020">林业站</option>
+                    <option value="3030">环卫站</option>
+                    <option value="3040">安监站/安全站</option>
+                    <option value="3050">民政办</option>
+                    <option value="3060">国土所</option>
+                    <option value="3070">派出所/城区片警</option>
+                    <option value="3080">综治信访</option>
+                    <option value="3090">党建</option>
+                    <option value="3999">其他</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-6 col-sm-4 col-lg-3">
+              <div class="form-group">
+                <label class="col-sm-4 control-label">当前审批人用户名：</label>
+                <div class="col-sm-7">
+                  <input type="text" name="receivedUserName" placeholder="搜索用户名" class="form-control"/>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="text-center">
             <button id="btn-search-clueReport" class="btn btn-primary"><i class="fa fa-search"></i> 查询
             </button>
@@ -164,6 +202,16 @@
               data-formatter="fun_state" data-sortable="true">
             状态
           </th>
+          <th data-column-id="receivedUserAccount"  data-visible="true" data-sortable="true">
+            当前审批人账号
+          </th>
+          <th data-column-id="receivedUserName"  data-visible="true" data-sortable="true">
+            当前审批人用户名
+          </th>
+          <th data-column-id="enabled" data-order="desc" data-formatter="fun_name_role"
+              data-visible="true" data-sortable="true">当前审批人角色
+          </th>
+
           <th data-column-id="link" data-width="180px" data-formatter="commands" data-custom="true"
               data-sortable="false">操作
           </th>
@@ -499,6 +547,56 @@
           }
           return content;
         },
+
+        "fun_name_role": function (column, row) {
+          var roleId = row.receivedRoleId;
+          if (roleId === 1001) {
+            return "村（社）网格员";
+          } else if (roleId === 1002) {
+            return "廉润寿川网格联络员";
+          } else if (roleId === 1003) {
+            return "乡镇纪委管理员";
+          } else if (roleId === 1004) {
+            return "县信访室";
+          } else if (roleId === 1005) {
+            return "分管领导";
+          } else if (roleId === 1006) {
+            return "县级领导班子";
+          } else if (roleId === 1007) {
+            return "超级管理员";
+          } else if (roleId === 1008) {
+            return "巡察办主任";
+          } else if (roleId === 1009) {
+            return "巡察一组";
+          } else if (roleId === 1010) {
+            return "巡察二组";
+          } else if (roleId === 1011) {
+            return "巡察三组";
+          } else if (roleId === 1012) {
+            return "村干部/社区书记";
+          } else if (roleId === 3010) {
+            return "乡镇农经站/城区财务";
+          } else if (roleId === 3020) {
+            return "林业站";
+          } else if (roleId === 3030) {
+            return "环卫站";
+          } else if (roleId === 3040) {
+            return "安监站/安全站";
+          } else if (roleId === 3050) {
+            return "民政办";
+          } else if (roleId === 3060) {
+            return "国土所";
+          } else if (roleId === 3070) {
+            return "派出所/城区片警";
+          } else if (roleId === 3080) {
+            return "综治信访";
+          } else if (roleId === 3090) {
+            return "党建";
+          } else if (roleId === 3999) {
+            return "其他";
+          }
+        },
+
         "fun_township_userName": function (rolumn, row) {
           var content = row.reportUserAreaName;
           return content;
